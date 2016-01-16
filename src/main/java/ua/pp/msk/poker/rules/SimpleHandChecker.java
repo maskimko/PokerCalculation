@@ -22,6 +22,12 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleHandChecker implements HandChecker {
 
+    private Card[] cardCombination = new Card[5];
+    
+    public SimpleHandChecker(){
+        Arrays.fill(cardCombination, null);
+    }
+    
     @Override
     public Combination checkHand(Card[] cards) throws CardException {
        Combination state = Combination.HIGHHAND;
@@ -40,7 +46,7 @@ public class SimpleHandChecker implements HandChecker {
 
     private boolean isPair(Card[] cards) {
         boolean result = false;
-        Map<SuitSet, Integer> cardMap = getCardMap(cards);
+        Map<SuitSet, Integer> cardMap = getCardValueMap(cards);
         Iterator<Map.Entry<SuitSet, Integer>> iterator = cardMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<SuitSet, Integer> entry = iterator.next();
@@ -53,8 +59,7 @@ public class SimpleHandChecker implements HandChecker {
         return result;
     }
 
-    //TODO change Map signature to Map<SuitSet, Suit[]>
-    private Map<SuitSet, Integer> getCardMap(Card[] cards) {
+    private Map<SuitSet, Integer> getCardValueMap(Card[] cards) {
         Map<SuitSet, Integer> cardMap = new HashMap<>();
         //Initialize Map with zeroes
         for (SuitSet ss : SuitSet.values()) {
@@ -68,6 +73,38 @@ public class SimpleHandChecker implements HandChecker {
             }
         }
         return cardMap;
+    }
+    
+    
+    @Deprecated
+    private Card getKicker(Card[] cardsInGame, Card[] combinationCards ){
+        sort(cardsInGame);
+        Card kicker = null;
+        for (int i = 0; i < cardsInGame.length; i++){
+            boolean inCombination = false;
+            for (int j=0; j< combinationCards.length; j++){
+                if (combinationCards[j] != null){
+                    if (combinationCards[j].equals(cardsInGame[i])){
+                        inCombination = true;
+                    }
+                }
+            }
+            if (!inCombination){
+                
+                if (kicker == null){
+                    kicker = cardsInGame[i];
+                } else  { 
+                    if ( kicker.compareTo(cardsInGame[i]) < 0){
+                    kicker = cardsInGame[i];
+                }
+                }
+            }
+        }
+        return kicker;
+    }
+    
+    private void sort(Card[] cards){
+        Arrays.sort(cards);
     }
 
 }

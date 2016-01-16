@@ -55,13 +55,14 @@ public class Player {
         pair[1] = null;
     }
 
-    public Combination checkHand(Card[] cards) throws ExtraCardException {
+     Combination checkHand(Card[] cards) throws ExtraCardException {
         Combination combination = null;
         if (cards.length > 5) {
             throw new ExtraCardException(String.format("%d extra cards are on table. There can be from 0 till 5 card maximum after River ", cards.length - 5));
         }
         HandChecker hc = new SimpleHandChecker();
         try {
+            //Consider all available cards for player
             Card[] inGameCards = new Card[7];
             int i = 0;
             for (; i < pair.length; i++) {
@@ -70,6 +71,7 @@ public class Player {
             for (; i < cards.length + 2; i++) {
                 inGameCards[i] = cards[i - 2];
             }
+            
            combination = hc.checkHand(inGameCards);
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
@@ -80,6 +82,7 @@ public class Player {
         }
         return combination;
     }
+     
 
     public void takeASeat(Table t) throws FullTableException {
         t.registerPlayer(this);

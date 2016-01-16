@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class Card {
+public class Card implements Comparable<Card>{
 private final Suit suit;
 private final SuitSet value;
 private boolean visible = true;
@@ -70,6 +70,15 @@ public Card (Suit suit, SuitSet value){
     public String toString() {
         
         return String.format("%2s%s", value.getLetter(), suit.getSymbol());
+    }
+
+    @Override
+    public int compareTo(Card t) {
+        if (value.ordinal() > t.value.ordinal()){
+            return 1;
+        } else if (value.ordinal() < t.value.ordinal()){
+            return -1;
+        } else return 0;
     }
     
     
