@@ -15,17 +15,29 @@ import ua.pp.msk.poker.rules.Combination;
 public class SimpleCalculator {
 
     public static void main(String[] args) {
-        Simulator simulator = new Simulator(3);
-        for (int i=0; i<10; i++){
-            simulator.run();
-        }
+        int playersNumber = 5;
+        int gamesNumber = 1000000;
+        long startTime = System.currentTimeMillis();
+        startSimulation(playersNumber, gamesNumber);
+        long endTime = System.currentTimeMillis();
+        System.out.println(String.format("Calculations for %d players adn %d games played:", playersNumber, gamesNumber));
         printStatistic();
+        System.out.println(String.format("It took %d milliseconds to finish", endTime-startTime));
     }
     
     private static void printStatistic(){
-        System.out.println("\nStatistics:\n");
+        System.out.println("\nStatistics:");
+        System.out.println("Combinations analyzed: " + Statistic.getRegistrationsCount());
+        System.out.println(String.format("\n%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
+        System.out.println("-------------------------------------");
         for (Map.Entry<Combination, Integer> entry : Statistic.getStatistic().entrySet()){
-            System.out.println(String.format("%15s\t%s", entry.getKey().name(), entry.getValue()));
+            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double)entry.getValue()) *100 / Statistic.getRegistrationsCount()));
+        }
+    }
+    private static void startSimulation(int players, int games){
+        Simulator simulator = new Simulator(players);
+        for (int i=0; i<games; i++){
+            simulator.run();
         }
     }
 }

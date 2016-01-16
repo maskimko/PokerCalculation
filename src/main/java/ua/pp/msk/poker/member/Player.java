@@ -74,7 +74,7 @@ public class Player {
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
                             getName(), combination.name(), Arrays.toString(pair), Arrays.toString(cards)));
-            System.out.println(String.format("Player \"%s\" Got a combination %s", getName(), combination.name()));
+           // System.out.println(String.format("Player \"%s\" Got a combination %s", getName(), combination.name()));
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }
