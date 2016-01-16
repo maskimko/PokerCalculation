@@ -20,14 +20,22 @@ import ua.pp.msk.poker.member.Table;
  */
 public class Simulator implements Runnable{
 
+    private int playersNumber = 1;
+    public Simulator(){
+    }
+    public Simulator(int playersNumber){
+        //TODO Check acceptance on players quantity
+        this.playersNumber = playersNumber;
+    }
+    
     @Override
     public void run() {
         try {
-            Table table = new Table(2);
-            Player one = new Player(0, "Player 1");
-            Player two = new Player(1, "Player 2");
-            one.takeASeat(table,1);
-            two.takeASeat(table);            
+            Table table = new Table(playersNumber);
+            for (int i = 0; i < playersNumber; i++){
+                Player p  = new Player(i, "SimulatedPlayer"+i);
+                p.takeASeat(table);
+            }
             Dealer dealer = new Dealer(table);
             dealer.startGame();
         } catch (TableException ex) {

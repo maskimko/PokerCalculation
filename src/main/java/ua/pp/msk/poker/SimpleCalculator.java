@@ -15,8 +15,8 @@ import ua.pp.msk.poker.rules.Combination;
 public class SimpleCalculator {
 
     public static void main(String[] args) {
-        Simulator simulator = new Simulator();
-        for (int i=0; i<1000; i++){
+        Simulator simulator = new Simulator(3);
+        for (int i=0; i<10; i++){
             simulator.run();
         }
         printStatistic();
