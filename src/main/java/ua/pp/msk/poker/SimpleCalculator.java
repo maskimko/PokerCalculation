@@ -5,6 +5,9 @@
  */
 package ua.pp.msk.poker;
 
+import java.util.Map;
+import ua.pp.msk.poker.rules.Combination;
+
 /**
  *
  * @author Maksym Shkolnyi aka maskimko
@@ -13,8 +16,16 @@ public class SimpleCalculator {
 
     public static void main(String[] args) {
         Simulator simulator = new Simulator();
-        for (int i=1; i<200000; i++){
+        for (int i=0; i<1000; i++){
             simulator.run();
+        }
+        printStatistic();
+    }
+    
+    private static void printStatistic(){
+        System.out.println("\nStatistics:\n");
+        for (Map.Entry<Combination, Integer> entry : Statistic.getStatistic().entrySet()){
+            System.out.println(String.format("%15s\t%s", entry.getKey().name(), entry.getValue()));
         }
     }
 }

@@ -5,6 +5,7 @@
  */
 package ua.pp.msk.poker.rules;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class SimpleHandChecker implements HandChecker {
 
     @Override
     public Combination checkHand(Card[] cards) throws CardException {
+       Combination state = Combination.HIGHHAND;
         if (cards.length < 2) {
             throw new MissingCardException(String.format("Missing  %d cards. it should be at least 2 cards", 2 - cards.length));
         }
@@ -30,9 +32,10 @@ public class SimpleHandChecker implements HandChecker {
             throw new ExtraCardException(String.format("Extra %d cards. it should be at most 7 cards", cards.length - 7));
         }
         if (isPair(cards)) {
-            return Combination.ONEPAIR;
+            state = Combination.ONEPAIR;
         }
-        return Combination.HIGHHAND;
+        if (state == Combination.HIGHHAND) LoggerFactory.getLogger(this.getClass()).debug(String.format("Found High Hand combination %s", Arrays.toString(cards)));
+        return state;
     }
 
     private boolean isPair(Card[] cards) {
@@ -42,7 +45,7 @@ public class SimpleHandChecker implements HandChecker {
         while (iterator.hasNext()) {
             Map.Entry<SuitSet, Integer> entry = iterator.next();
             if (entry.getValue() == 2) {
-                LoggerFactory.getLogger(this.getClass()).debug(String.format("Found pair combination of 2 cards of %ss", entry.getKey()));
+                LoggerFactory.getLogger(this.getClass()).debug(String.format("Found One Pair combination  of %ss %s", entry.getKey(), Arrays.toString(cards)));
                 result = true;
                 break;
             }

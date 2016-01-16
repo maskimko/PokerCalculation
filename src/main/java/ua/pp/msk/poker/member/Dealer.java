@@ -6,14 +6,14 @@
 package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
+import ua.pp.msk.poker.Statistic;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Deck;
 import ua.pp.msk.poker.deck.Deck52;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
+import ua.pp.msk.poker.rules.Combination;
 
 /**
  *
@@ -70,7 +70,8 @@ public class Dealer {
         for (int i =0; i< players.length; i++){
             if (players[i] != null){
                 try {
-                    players[i].checkHand(onTable);
+                    Combination combination = players[i].checkHand(onTable);
+                    Statistic.registerOccurance(combination);
                 } catch (ExtraCardException ex) {
                    LoggerFactory.getLogger(this.getClass()).error(String.format("Extra cards %d are on the table for player %s", onTable.length -5, players[i].getName()), ex);
                 }
@@ -78,6 +79,10 @@ public class Dealer {
         }
     }
     
+    /**
+     * Makes a place for cards on the playing table
+     * @return 
+     */
     private Card[] getCardPool(){
          Card[] onTable = new Card[5];
          Arrays.fill(onTable, null);
