@@ -5,6 +5,7 @@
  */
 package ua.pp.msk.poker;
 
+import ua.pp.msk.poker.stat.Statistic;
 import java.util.Map;
 import ua.pp.msk.poker.rules.Combination;
 
@@ -16,7 +17,7 @@ public class SimpleCalculator {
 
     public static void main(String[] args) {
         int playersNumber = 3;
-        int gamesNumber = 600000;
+        int gamesNumber = 10000;
         long startTime = System.currentTimeMillis();
         startSimulation(playersNumber, gamesNumber);
         long endTime = System.currentTimeMillis();
@@ -28,15 +29,22 @@ public class SimpleCalculator {
     private static void printStatistic() {
         System.out.println("\nStatistics:");
         System.out.println("Combinations analyzed: " + Statistic.getRegistrationsCount());
-        System.out.println(String.format("\n%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
+        System.out.println("\n\n------Pre Flop Statistic-------------");
+        System.out.println(String.format("%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
         System.out.println("-------------------------------------");
-        for (Map.Entry<Combination, Integer> entry : Statistic.getStatistic().entrySet()) {
+        for (Map.Entry<Combination, Integer> entry : Statistic.getPreFlopStatistic().entrySet()) {
+            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
+        }
+        System.out.println("\n\n----------Flop Statistic-------------");
+        System.out.println(String.format("%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
+        System.out.println("-------------------------------------");
+        for (Map.Entry<Combination, Integer> entry : Statistic.getFlopStatistic().entrySet()) {
             System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
         }
     }
 
     private static void startSimulation(int players, int games) {
-        Simulator simulator = new Simulator( games, players, true);
+        Simulator simulator = new Simulator(games, players, true);
         simulator.run();
     }
 }

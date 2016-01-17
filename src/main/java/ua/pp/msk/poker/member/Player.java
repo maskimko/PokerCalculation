@@ -7,7 +7,7 @@ package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.Statistic;
+import ua.pp.msk.poker.stat.Statistic;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;

@@ -24,7 +24,12 @@ public class SimpleHandChecker implements HandChecker {
     private Hand hand = new Hand();
 
     
-
+/**
+ * Check what combination is in game
+ * @param cards Cards which are in the game. Up to 7 cards. 5 on a table and 2 player cards
+ * @return Players best Hand
+ * @throws CardException 
+ */
     @Override
     public Hand checkHand(Card[] cards) throws CardException {
         
@@ -74,6 +79,23 @@ public class SimpleHandChecker implements HandChecker {
 //            }
 //        }
         
+    }
+    
+    
+    public void isTwoPairs(Card[] cardsInGame, Hand hand){
+        byte pairsDetected = 0;
+        byte handPointer = 0;
+        Card[] handCards = hand.getCards();
+        Arrays.fill(handCards, null);
+        sort(cardsInGame);
+        for (int i =0; i < cardsInGame.length-1 || pairsDetected == 2; i++){
+            if (cardsInGame[i]!= null && cardsInGame[i].equals(cardsInGame[i+1])){
+                handCards[handPointer++] = cardsInGame[i];
+                handCards[handPointer++] = cardsInGame[i+1];
+                pairsDetected++;
+            }
+        }
+        fillUpTheHand(cardsInGame, handCards);
     }
 
     @Deprecated

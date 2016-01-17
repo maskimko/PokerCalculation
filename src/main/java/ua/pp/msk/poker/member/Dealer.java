@@ -7,7 +7,7 @@ package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.Statistic;
+import ua.pp.msk.poker.stat.Statistic;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Deck;
 import ua.pp.msk.poker.deck.Deck52;
@@ -38,6 +38,8 @@ public class Dealer {
         int deckPointer = giveCards(players, deck);
         // No need to check the cards here noe
         //checkHands(onTable);
+        deckPointer = showFlop(deck, deckPointer, onTable);
+        checkHands(onTable);
     }
     
     /**
@@ -47,6 +49,7 @@ public class Dealer {
      * @return Deck card pointer index. Means which card was issue last plus two
      */
     private int giveCards(Player[] players, Deck deck){
+        Statistic.resetStage();
         int pointer = 0;
         for (int i = 0; i < players.length; ){
             if (players[i] != null) {
@@ -86,5 +89,23 @@ public class Dealer {
          Card[] onTable = new Card[5];
          Arrays.fill(onTable, null);
          return onTable;
+    }
+    /**
+     * Issues a flop cards
+     * @param deck Deck of Cards
+     * @param deckPointer pointer after last card which has been given to a player
+     * @param table Array of five table cards in game. Flop should put there 3 of 5 cards. 
+     * @return pointer after the flop cards.
+     */
+    private int showFlop(Deck deck, int deckPointer, Card[] table){
+        //TODO Check how how card should be issued to the flop. Sequentially or every other one
+        Card[] cardsInDeck = deck.getCards();
+        //By default we will put to flop every other card
+        for (int i = 0; i < 3; i++){
+            table[i] = cardsInDeck[deckPointer];
+            deckPointer +=2;
+        }
+        Statistic.nextGameStage();
+        return deckPointer;
     }
 }
