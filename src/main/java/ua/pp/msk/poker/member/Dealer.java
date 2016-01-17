@@ -13,7 +13,7 @@ import ua.pp.msk.poker.deck.Deck;
 import ua.pp.msk.poker.deck.Deck52;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
-import ua.pp.msk.poker.rules.Combination;
+import ua.pp.msk.poker.rules.Hand;
 
 /**
  *
@@ -34,10 +34,10 @@ public class Dealer {
         Card[] onTable = getCardPool();
         LoggerFactory.getLogger(this.getClass()).debug("Suffleing the deck");
         deck.shuffle();
-         LoggerFactory.getLogger(this.getClass()).debug("Issuing cards");
+         LoggerFactory.getLogger(this.getClass()).debug("Issuing cards and instant Pre-flop Checking hands");
         int deckPointer = giveCards(players, deck);
-         LoggerFactory.getLogger(this.getClass()).debug("Pre-flop Checking hands");
-        checkHands(onTable);
+        // No need to check the cards here noe
+        //checkHands(onTable);
     }
     
     /**
@@ -70,8 +70,7 @@ public class Dealer {
         for (int i =0; i< players.length; i++){
             if (players[i] != null){
                 try {
-                    Combination combination = players[i].checkHand(onTable);
-                    Statistic.registerOccurance(combination);
+                    Hand hand = players[i].checkHand(onTable);
                 } catch (ExtraCardException ex) {
                    LoggerFactory.getLogger(this.getClass()).error(String.format("Extra cards %d are on the table for player %s", onTable.length -5, players[i].getName()), ex);
                 }

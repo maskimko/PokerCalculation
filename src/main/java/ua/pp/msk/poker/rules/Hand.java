@@ -3,25 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ua.pp.msk.poker.rules;
 
 import java.util.Arrays;
 import java.util.Objects;
 import ua.pp.msk.poker.deck.Card;
+import ua.pp.msk.poker.exceptions.CardException;
+import ua.pp.msk.poker.exceptions.ExtraCardException;
+import ua.pp.msk.poker.exceptions.MissingCardException;
 
 /**
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class Hand implements Comparable<Hand>{
-private Combination combination;
-private Card[] cards;
-public Hand(){
-    combination = Combination.HIGHHAND;
-    cards = new Card[5];
-    Arrays.fill(cards, null);
-}
+public class Hand implements Comparable<Hand> {
+
+    private Combination combination;
+    private Card[] cards;
+
+    public Hand() {
+        combination = Combination.HIGHHAND;
+        cards = new Card[5];
+        Arrays.fill(cards, null);
+    }
 
     public Combination getCombination() {
         return combination;
@@ -35,7 +39,13 @@ public Hand(){
         return cards;
     }
 
-    public void setCards(Card[] cards) {
+    public void setCards(Card[] cards) throws CardException {
+        if (cards.length > 5) {
+            throw new ExtraCardException("Hand cannot be bigger than 5 cards");
+        }
+        if (cards.length < 5) {
+            throw new MissingCardException("Hand cannot be smaller than 5 cards");
+        }
         this.cards = cards;
     }
 
@@ -64,24 +74,38 @@ public Hand(){
         }
         return true;
     }
-    
-    
+
     //TODO Test this method
-    private boolean cardsEquals(Card[] one, Card[] second){
+    private boolean cardsEquals(Card[] one, Card[] second) {
         if (one.length != second.length) {
             return false;
         }
-        for (int i = 0; i < one.length; i++){
-            boolean hasThisCard = false;
-            for (int j = 0; j < second.length; j++){
-                if (one[i].equals(second[j])){
-                    hasThisCard = true;
-                    break;
+        int n = 0;
+        for (int i = 0; i < one.length; i++) {
+
+            if (one[i] != null) {
+                boolean hasThisCard = false;
+                for (int j = 0; j < second.length; j++) {
+                    if (one[i].equals(second[j])) {
+                        hasThisCard = true;
+                        break;
+                    };
+                }
+                if (!hasThisCard) {
+                    return false;
+                }
+            } else {
+                n++;
+            }
+        }
+        if (n != 0) {
+            int sn = 0;
+            for (int k = 0; k < second.length; k++) {
+                if (second[k] == null) {
+                    sn++;
                 }
             }
-            if (!hasThisCard) {
-                return false;
-            }
+            if (n != sn) return false;
         }
         return true;
     }
@@ -91,29 +115,26 @@ public Hand(){
         return String.format("%15s\t%s", combination.name(), Arrays.toString(cards));
     }
 
-    
     //TODO Test this method
     @Override
     public int compareTo(Hand t) {
-       if (this.combination.ordinal() > t.combination.ordinal()){
-           return 1;
-       } else if (this.combination.ordinal() < t.combination.ordinal()){
-           return -1;
-       } else if (this.equals(t)){
-           return 0;
-       } else {
-           //TODO check if it is descending after the sorting
-           Arrays.sort(this.cards);
-           Arrays.sort(t.cards);
-           for (int i = 0; i < cards.length; i++){
-               if (this.cards[i].compareTo(t.cards[i]) != 0){
-                   return this.cards[i].compareTo(t.cards[i]);
-               }
-           }
-       }
-       return 0;
+        if (this.combination.ordinal() > t.combination.ordinal()) {
+            return 1;
+        } else if (this.combination.ordinal() < t.combination.ordinal()) {
+            return -1;
+        } else if (this.equals(t)) {
+            return 0;
+        } else {
+            //TODO check if it is descending after the sorting
+            Arrays.sort(this.cards);
+            Arrays.sort(t.cards);
+            for (int i = 0; i < cards.length; i++) {
+                if (this.cards[i].compareTo(t.cards[i]) != 0) {
+                    return this.cards[i].compareTo(t.cards[i]);
+                }
+            }
+        }
+        return 0;
     }
-
-
 
 }

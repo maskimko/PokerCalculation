@@ -14,5 +14,5 @@ import ua.pp.msk.poker.exceptions.CardException;
  * @author Maksym Shkolnyi aka maskimko
  */
 public interface HandChecker {
-    public Combination checkHand(Card[] cards) throws CardException;
+    public Hand checkHand(Card[] cards) throws CardException;
 }

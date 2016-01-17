@@ -5,7 +5,6 @@
  */
 package ua.pp.msk.poker.rules;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import ua.pp.msk.poker.deck.Card;
@@ -32,8 +31,10 @@ public class SimpleHandCheckerTest {
         cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
         cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
         SimpleHandChecker instance = new SimpleHandChecker();
-        Combination expResult = Combination.HIGHHAND;
-        Combination result = instance.checkHand(cards);
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.HIGHHAND);
+        expResult.setCards(new Card[]{cards[0], cards[1], null, null, null});
+        Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
     }
 
@@ -46,8 +47,10 @@ public class SimpleHandCheckerTest {
         cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
         cards[2] = new Card(Suit.DIAMONS, SuitSet.TWO);
         SimpleHandChecker instance = new SimpleHandChecker();
-        Combination expResult = Combination.ONEPAIR;
-        Combination result = instance.checkHand(cards);
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.ONEPAIR);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], null, null});
+        Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
     }
 

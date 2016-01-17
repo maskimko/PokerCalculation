@@ -7,7 +7,6 @@ package ua.pp.msk.poker.rules;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.SuitSet;
@@ -22,43 +21,62 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleHandChecker implements HandChecker {
 
-    private Card[] cardCombination = new Card[5];
+    private Hand hand = new Hand();
+
     
-    public SimpleHandChecker(){
-        Arrays.fill(cardCombination, null);
-    }
-    
+
     @Override
-    public Combination checkHand(Card[] cards) throws CardException {
-       Combination state = Combination.HIGHHAND;
+    public Hand checkHand(Card[] cards) throws CardException {
+        
         if (cards.length < 2) {
             throw new MissingCardException(String.format("Missing  %d cards. it should be at least 2 cards", 2 - cards.length));
         }
         if (cards.length > 7) {
             throw new ExtraCardException(String.format("Extra %d cards. it should be at most 7 cards", cards.length - 7));
         }
-        if (isPair(cards)) {
-            state = Combination.ONEPAIR;
+        isPair(cards, hand);
+            
+        
+        if (hand.getCombination() == Combination.HIGHHAND) {
+            Card[] handCards = fillUpTheHand(cards, new Card[5]);
+            hand.setCards(handCards);
+            LoggerFactory.getLogger(this.getClass()).debug(String.format("Found High Hand combination %s", hand.toString()));
         }
-        if (state == Combination.HIGHHAND) LoggerFactory.getLogger(this.getClass()).debug(String.format("Found High Hand combination %s", Arrays.toString(cards)));
-        return state;
+        return hand;
     }
 
-    private boolean isPair(Card[] cards) {
+    private void isPair(Card[] cards, Hand hand) throws CardException{
         boolean result = false;
-        Map<SuitSet, Integer> cardMap = getCardValueMap(cards);
-        Iterator<Map.Entry<SuitSet, Integer>> iterator = cardMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<SuitSet, Integer> entry = iterator.next();
-            if (entry.getValue() == 2) {
-                LoggerFactory.getLogger(this.getClass()).debug(String.format("Found One Pair combination  of %ss %s", entry.getKey(), Arrays.toString(cards)));
-                result = true;
-                break;
+        sort(cards);
+        for (int i = 0; i < cards.length - 1; i++) {
+          if (cards[i] != null){
+            if (cards[i+1] != null && cards[i].getValue().equals(cards[i + 1].getValue())) {
+                try {
+                    result = true;
+                    Card[] handCards = fillUpTheHand(cards, new Card[]{cards[i],cards[i+1]});
+                    hand.setCards(handCards);
+                    hand.setCombination(Combination.ONEPAIR);
+                    break;
+                } catch (CardException ex) {
+                    LoggerFactory.getLogger(this.getClass()).error("Card quantity error", ex);
+                }
             }
+          }
         }
-        return result;
+//        Map<SuitSet, Integer> cardMap = getCardValueMap(cards);
+//        Iterator<Map.Entry<SuitSet, Integer>> iterator = cardMap.entrySet().iterator();
+//        while (iterator.hasNext()) {
+//            Map.Entry<SuitSet, Integer> entry = iterator.next();
+//            if (entry.getValue() == 2) {
+//                LoggerFactory.getLogger(this.getClass()).debug(String.format("Found One Pair combination  of %ss %s", entry.getKey(), Arrays.toString(cards)));
+//                result = true;
+//                break;
+//            }
+//        }
+        
     }
 
+    @Deprecated
     private Map<SuitSet, Integer> getCardValueMap(Card[] cards) {
         Map<SuitSet, Integer> cardMap = new HashMap<>();
         //Initialize Map with zeroes
@@ -74,37 +92,70 @@ public class SimpleHandChecker implements HandChecker {
         }
         return cardMap;
     }
+
     
-    
-    @Deprecated
-    private Card getKicker(Card[] cardsInGame, Card[] combinationCards ){
+    //TODO Test this method;
+    private Card[] fillUpTheHand(Card[] cardsInGame, Card[] combinationCards) {
         sort(cardsInGame);
-        Card kicker = null;
-        for (int i = 0; i < cardsInGame.length; i++){
-            boolean inCombination = false;
-            for (int j=0; j< combinationCards.length; j++){
-                if (combinationCards[j] != null){
-                    if (combinationCards[j].equals(cardsInGame[i])){
-                        inCombination = true;
+        //Copy combination cards to the hand
+        Card[] handCards = new Card[5];
+        int handPointer = 0;
+        for (int i = 0; handPointer < combinationCards.length && i < combinationCards.length; i++) {
+           if (combinationCards[handPointer] != null){
+               handCards[handPointer] = combinationCards[handPointer++];
+           }
+        }
+        boolean stop = false;
+        while (!stop && !isHandComplete(handCards)) {
+            Card kicker = null;
+            for (int i = 0; i < cardsInGame.length; i++) {
+                if (cardsInGame[i] == null){
+                    stop = true;
+                    break;
+                }
+                boolean alreadyInHand = false;
+                for (int j = 0; j < handCards.length; j++) {
+                    if (handCards[j] != null) {
+                        if (handCards[j].equals(cardsInGame[i])) {
+                            alreadyInHand = true;
+                        }
                     }
                 }
-            }
-            if (!inCombination){
-                
-                if (kicker == null){
-                    kicker = cardsInGame[i];
-                } else  { 
-                    if ( kicker.compareTo(cardsInGame[i]) < 0){
-                    kicker = cardsInGame[i];
-                }
+                if (!alreadyInHand) {
+
+                    if (kicker == null) {
+                        kicker = cardsInGame[i];
+                    } else {
+                        if (kicker.compareTo(cardsInGame[i]) < 0) {
+                            kicker = cardsInGame[i];
+                        }
+                    }
+                    handCards[handPointer++] = kicker;
                 }
             }
         }
-        return kicker;
-    }
-    
-    private void sort(Card[] cards){
-        Arrays.sort(cards);
+        return handCards;
     }
 
+    private void sort(Card[] cards) {
+         
+                 Arrays.sort(cards, (Card t, Card t1) -> {
+                     if (t == null && t1 == null){
+                         return 0;
+                     } else if (t == null){
+                         return 1;
+                     } else if (t1 == null) {
+                         return -1;
+                     } else return t.compareTo(t1);
+                 });
+    }
+
+    private boolean isHandComplete(Card[] handCards) {
+        for (int i = 0; i < handCards.length; i++) {
+            if (handCards[i] == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

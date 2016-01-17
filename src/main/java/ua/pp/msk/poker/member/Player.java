@@ -7,12 +7,13 @@ package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.rules.Combination;
+import ua.pp.msk.poker.Statistic;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
 import ua.pp.msk.poker.exceptions.FullTableException;
 import ua.pp.msk.poker.exceptions.MissingCardException;
+import ua.pp.msk.poker.rules.Hand;
 import ua.pp.msk.poker.rules.HandChecker;
 import ua.pp.msk.poker.rules.SimpleHandChecker;
 
@@ -25,6 +26,7 @@ public class Player {
     private final int id;
     private String name;
     private Card[] pair = new Card[2];
+    private Hand hand = null;
 
     public Player(int id, String name) {
         this.id = id;
@@ -44,6 +46,7 @@ public class Player {
             }
         } else {
             this.pair = cards;
+            checkHand(new Card[5]);
         }
     }
 
@@ -55,8 +58,13 @@ public class Player {
         pair[1] = null;
     }
 
-     Combination checkHand(Card[] cards) throws ExtraCardException {
-        Combination combination = null;
+    /**
+     *
+     * @param cards Card array from table up to 5 cards
+     * @return
+     * @throws ExtraCardException
+     */
+    Hand checkHand(Card[] cards) throws ExtraCardException {
         if (cards.length > 5) {
             throw new ExtraCardException(String.format("%d extra cards are on table. There can be from 0 till 5 card maximum after River ", cards.length - 5));
         }
@@ -71,18 +79,19 @@ public class Player {
             for (; i < cards.length + 2; i++) {
                 inGameCards[i] = cards[i - 2];
             }
-            
-           combination = hc.checkHand(inGameCards);
+
+            hand = hc.checkHand(inGameCards);
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
-                            getName(), combination.name(), Arrays.toString(pair), Arrays.toString(cards)));
-           // System.out.println(String.format("Player \"%s\" Got a combination %s", getName(), combination.name()));
+                            getName(), hand.toString(), Arrays.toString(pair), Arrays.toString(cards)));
+            // System.out.println(String.format("Player \"%s\" Got a combination %s", getName(), combination.name()));
+            Statistic.registerOccurance(hand.getCombination());
+
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }
-        return combination;
+        return hand;
     }
-     
 
     public void takeASeat(Table t) throws FullTableException {
         t.registerPlayer(this);

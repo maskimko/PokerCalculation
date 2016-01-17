@@ -9,6 +9,7 @@ package ua.pp.msk.poker;
 import java.util.HashMap;
 import java.util.Map;
 import ua.pp.msk.poker.rules.Combination;
+import ua.pp.msk.poker.rules.Hand;
 
 /**
  *
