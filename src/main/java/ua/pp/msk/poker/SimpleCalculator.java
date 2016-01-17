@@ -15,29 +15,28 @@ import ua.pp.msk.poker.rules.Combination;
 public class SimpleCalculator {
 
     public static void main(String[] args) {
-        int playersNumber = 2;
-        int gamesNumber = 1000000;
+        int playersNumber = 3;
+        int gamesNumber = 600000;
         long startTime = System.currentTimeMillis();
         startSimulation(playersNumber, gamesNumber);
         long endTime = System.currentTimeMillis();
         System.out.println(String.format("Calculations for %d players adn %d games played:", playersNumber, gamesNumber));
         printStatistic();
-        System.out.println(String.format("It took %d milliseconds to finish", endTime-startTime));
+        System.out.println(String.format("It took %d milliseconds to finish", endTime - startTime));
     }
-    
-    private static void printStatistic(){
+
+    private static void printStatistic() {
         System.out.println("\nStatistics:");
         System.out.println("Combinations analyzed: " + Statistic.getRegistrationsCount());
         System.out.println(String.format("\n%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
         System.out.println("-------------------------------------");
-        for (Map.Entry<Combination, Integer> entry : Statistic.getStatistic().entrySet()){
-            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double)entry.getValue()) *100 / Statistic.getRegistrationsCount()));
+        for (Map.Entry<Combination, Integer> entry : Statistic.getStatistic().entrySet()) {
+            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
         }
     }
-    private static void startSimulation(int players, int games){
-        Simulator simulator = new Simulator(players);
-        for (int i=0; i<games; i++){
-            simulator.run();
-        }
+
+    private static void startSimulation(int players, int games) {
+        Simulator simulator = new Simulator( games, players, true);
+        simulator.run();
     }
 }
