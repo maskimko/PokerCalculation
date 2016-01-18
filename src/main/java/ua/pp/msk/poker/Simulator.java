@@ -5,8 +5,6 @@
  */
 package ua.pp.msk.poker;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 import ua.pp.msk.poker.exceptions.TableException;
 import ua.pp.msk.poker.member.Dealer;

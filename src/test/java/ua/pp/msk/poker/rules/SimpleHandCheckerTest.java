@@ -26,7 +26,7 @@ public class SimpleHandCheckerTest {
     @Test
     public void testCheckHighHand() throws Exception {
         System.out.println("checkHand");
-        System.out.println("High Hand");
+        System.out.println("\tHigh Hand");
         Card[] cards = new Card[7];
         cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
         cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
@@ -41,7 +41,7 @@ public class SimpleHandCheckerTest {
     @Test
     public void testCheckOnePair() throws Exception {
         System.out.println("checkHand");
-        System.out.println("One Pair");
+        System.out.println("\tOne Pair");
         Card[] cards = new Card[7];
         cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
         cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
@@ -52,6 +52,88 @@ public class SimpleHandCheckerTest {
         expResult.setCards(new Card[]{cards[0], cards[2], cards[1], null, null});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+    }
+
+    @Test
+    public void testCheckTwoPairs() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tTwo Pairs");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[2] = new Card(Suit.DIAMONS, SuitSet.TWO);
+        cards[3] = new Card(Suit.SPADES, SuitSet.KING);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.TWOPAIRS);
+        expResult.setCards(new Card[]{cards[1], cards[3], cards[0], cards[2], cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+    }
+
+    @Test
+    public void testSort() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tSorting");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[2] = new Card(Suit.DIAMONS, SuitSet.TWO);
+        cards[3] = new Card(Suit.SPADES, SuitSet.KING);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[5] = new Card(Suit.DIAMONS, SuitSet.THREE);
+        cards[6] = new Card(Suit.DIAMONS, SuitSet.FOUR);
+        Card[] expected = new Card[]{cards[3], cards[1], cards[4], cards[6], cards[5], cards[2], cards[0]};
+
+        SimpleHandChecker.sort(cards);
+        for (int i = 0; i < 7; i++) {
+            assertEquals(cards[i], expected[i]);
+        }
+    }
+    
+    @Test
+    public void testSortWithNulls() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tSorting with null value");
+        Card[] cards = new Card[7];
+        cards[0] = null;
+        cards[1] = null;
+        cards[2] = new Card(Suit.DIAMONS, SuitSet.TWO);
+        cards[3] = new Card(Suit.SPADES, SuitSet.KING);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[5] = new Card(Suit.DIAMONS, SuitSet.THREE);
+        cards[6] = new Card(Suit.DIAMONS, SuitSet.FOUR);
+        Card[] expected = new Card[]{cards[3],  cards[4], cards[6], cards[5], cards[2], null, null};
+
+        SimpleHandChecker.sort(cards);
+        for (int i = 0; i < 7; i++) {
+            assertEquals(cards[i], expected[i]);
+        }
+        
+        
+    }
+
+
+    @Test
+    public void testEnsureDescSorted() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tEnsure descending order");
+        Card[] unsorted = new Card[7];
+        unsorted[0] = new Card(Suit.CLUBS, SuitSet.TWO);
+        unsorted[1] = new Card(Suit.HEARTS, SuitSet.KING);
+        unsorted[2] = new Card(Suit.DIAMONS, SuitSet.TWO);
+        unsorted[3] = new Card(Suit.SPADES, SuitSet.KING);
+        unsorted[4] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        unsorted[5] = new Card(Suit.DIAMONS, SuitSet.THREE);
+        unsorted[6] = new Card(Suit.DIAMONS, SuitSet.FOUR);
+
+        Card[] sorted = new Card[]{unsorted[3], unsorted[1], unsorted[4], unsorted[6], unsorted[5], unsorted[2], unsorted[0]};
+        boolean unsResult = SimpleHandChecker.ensureDescSorted(unsorted);
+        boolean sortedResult = SimpleHandChecker.ensureDescSorted(sorted);
+        assertTrue(sortedResult);
+        assertFalse(unsResult);
+
     }
 
 }

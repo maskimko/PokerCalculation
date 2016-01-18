@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ua.pp.msk.poker;
+package ua.pp.msk.poker.deck;
 
 import ua.pp.msk.poker.deck.SuitSet;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

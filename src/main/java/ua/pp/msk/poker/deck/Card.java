@@ -75,10 +75,18 @@ public Card (Suit suit, SuitSet value){
     @Override
     public int compareTo(Card t) {
         if (value.ordinal() < t.value.ordinal()){
-            return 1;
-        } else if (value.ordinal() > t.value.ordinal()){
             return -1;
-        } else return 0;
+        } else if (value.ordinal() > t.value.ordinal()){
+            return 1;
+        } else {
+            if (suit.getNumber() < t.getSuit().getNumber()) {
+                return -1;
+            } else if (suit.getNumber() > t.getSuit().getNumber()){
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
     
     
