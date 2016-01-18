@@ -139,11 +139,8 @@ public class SimpleHandChecker implements HandChecker {
                 handCards[handPointer] = combinationCards[handPointer++];
             }
         }
-        boolean stop = false;
-        while (!stop && !isHandComplete(handCards)) {
-            for (int i = 0; i < cardsInGame.length; i++) {
+            for (int i = 0; i < cardsInGame.length && !isHandComplete(handCards) ; i++) {
                 if (cardsInGame[i] == null) {
-                    stop = true;
                     break;
                 }
                 boolean alreadyInHand = false;
@@ -158,7 +155,6 @@ public class SimpleHandChecker implements HandChecker {
                     handCards[handPointer++] = cardsInGame[i];
                 }
             }
-        }
         return handCards;
     }
 
