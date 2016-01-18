@@ -44,15 +44,84 @@ public class SimpleHandChecker implements HandChecker {
         }
         isPair(cards, hand);
         if (hand.getCombination().equals(Combination.ONEPAIR)) {
+
             isTwoPairs(cards, hand);
+            if (hand.getCombination().equals(Combination.TWOPAIRS)) {
+                isFourOfKind(cards, hand);
+            }
+
+            isThreeOfKind(cards, hand);
+            //TODO Imlement Full House checking
+
         }
 
+        //TODO implement Straight
+        //TODO implement Flush
+        //TODO implement Straight Flush
+        //TODO implement Royal Flush
         if (hand.getCombination().equals(Combination.HIGHHAND)) {
             Card[] handCards = fillUpTheHand(cards, new Card[5]);
             hand.setCards(handCards);
             LoggerFactory.getLogger(this.getClass()).debug(String.format("Found High Hand combination %s", hand.toString()));
         }
         return hand;
+    }
+
+    private void isFourOfKind(Card[] cards, Hand hand) throws CardException {
+        sort(cards);
+        //Check for nulls
+        int notNulls = cards.length;
+        for (int j = 0; j < cards.length; j++) {
+            if (cards[j] == null) {
+                notNulls--;
+            }
+        }
+        if (notNulls >= 4) {
+            Card[] handCards = hand.getCards();
+            Arrays.fill(handCards, null);
+            for (int i = 0; i < cards.length - 3; i++) {
+                if (cards[i] != null && cards[i + 1] != null && cards[i + 2] != null && cards[i + 3] != null) {
+                    if (cards[i].getValue().equals(cards[i + 1].getValue()) && cards[i].getValue().equals(cards[i + 2].getValue()) && cards[i].getValue().equals(cards[i + 3].getValue())) {
+                        handCards[0] = cards[i];
+                        handCards[1] = cards[i + 1];
+                        handCards[2] = cards[i + 2];
+                        handCards[3] = cards[i + 3];
+                        handCards = fillUpTheHand(cards, handCards);
+                        hand.setCards(handCards);
+                        hand.setCombination(Combination.FOUROFKIND);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void isThreeOfKind(Card[] cards, Hand hand) throws CardException {
+        sort(cards);
+        //Check for nulls
+        int notNulls = cards.length;
+        for (int j = 0; j < cards.length; j++) {
+            if (cards[j] == null) {
+                notNulls--;
+            }
+        }
+        if (notNulls >= 3) {
+            Card[] handCards = hand.getCards();
+            Arrays.fill(handCards, null);
+            for (int i = 0; i < cards.length - 2; i++) {
+                if (cards[i] != null && cards[i + 1] != null && cards[i + 2] != null) {
+                    if (cards[i].getValue().equals(cards[i + 1].getValue()) && cards[i].getValue().equals(cards[i + 2].getValue())) {
+                        handCards[0] = cards[i];
+                        handCards[1] = cards[i + 1];
+                        handCards[2] = cards[i + 2];
+                        handCards = fillUpTheHand(cards, handCards);
+                        hand.setCards(handCards);
+                        hand.setCombination(Combination.THREEOFKIND);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void isPair(Card[] cards, Hand hand) throws CardException {
@@ -124,11 +193,10 @@ public class SimpleHandChecker implements HandChecker {
         return cardMap;
     }
 
-    //TODO Test this method;
     private Card[] fillUpTheHand(Card[] cardsInGame, Card[] combinationCards) throws CardOrderException {
         sort(cardsInGame);
         boolean descSorted = ensureDescSorted(cardsInGame);
-        if (!descSorted){
+        if (!descSorted) {
             throw new CardOrderException("Cards in shold be sorted in descending order");
         }
         //Copy combination cards to the hand
@@ -139,27 +207,27 @@ public class SimpleHandChecker implements HandChecker {
                 handCards[handPointer] = combinationCards[handPointer++];
             }
         }
-            for (int i = 0; i < cardsInGame.length && !isHandComplete(handCards) ; i++) {
-                if (cardsInGame[i] == null) {
-                    break;
-                }
-                boolean alreadyInHand = false;
-                for (int j = 0; j < handCards.length; j++) {
-                    if (handCards[j] != null) {
-                        if (handCards[j].equals(cardsInGame[i])) {
-                            alreadyInHand = true;
-                        }
+        for (int i = 0; i < cardsInGame.length && !isHandComplete(handCards); i++) {
+            if (cardsInGame[i] == null) {
+                break;
+            }
+            boolean alreadyInHand = false;
+            for (int j = 0; j < handCards.length; j++) {
+                if (handCards[j] != null) {
+                    if (handCards[j].equals(cardsInGame[i])) {
+                        alreadyInHand = true;
                     }
                 }
-                if (!alreadyInHand && cardsInGame[i] != null) {
-                    handCards[handPointer++] = cardsInGame[i];
-                }
             }
+            if (!alreadyInHand && cardsInGame[i] != null) {
+                handCards[handPointer++] = cardsInGame[i];
+            }
+        }
         return handCards;
     }
 
     public static void sort(Card[] cards) {
-        
+
         Arrays.sort(cards, Collections.reverseOrder((Card t, Card t1) -> {
             if (t == null && t1 == null) {
                 return 0;
@@ -181,13 +249,14 @@ public class SimpleHandChecker implements HandChecker {
         }
         return true;
     }
-    
-    
-    public static  boolean ensureDescSorted(Card[] cards){
+
+    public static boolean ensureDescSorted(Card[] cards) {
         boolean result = true;
-        for (int i = 1; i < cards.length; i++){
-            if (cards[i-1] == null || cards[i] == null) continue;
-            if (cards[i-1].compareTo(cards[i]) < 0) {
+        for (int i = 1; i < cards.length; i++) {
+            if (cards[i - 1] == null || cards[i] == null) {
+                continue;
+            }
+            if (cards[i - 1].compareTo(cards[i]) < 0) {
                 result = false;
                 break;
             }

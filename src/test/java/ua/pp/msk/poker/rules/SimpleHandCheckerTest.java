@@ -22,6 +22,7 @@ public class SimpleHandCheckerTest {
 
     /**
      * Test of checkHand method, of class SimpleHandChecker.
+     * @throws java.lang.Exception
      */
     @Test
     public void testCheckHighHand() throws Exception {
@@ -36,6 +37,7 @@ public class SimpleHandCheckerTest {
         expResult.setCards(new Card[]{cards[0], cards[1], null, null, null});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        System.out.println("Passed!");
     }
 
     @Test
@@ -52,6 +54,7 @@ public class SimpleHandCheckerTest {
         expResult.setCards(new Card[]{cards[0], cards[2], cards[1], null, null});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        System.out.println("Passed!");
     }
 
     @Test
@@ -70,6 +73,7 @@ public class SimpleHandCheckerTest {
         expResult.setCards(new Card[]{cards[1], cards[3], cards[0], cards[2], cards[4]});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        System.out.println("Passed!");
     }
 
     @Test
@@ -90,6 +94,7 @@ public class SimpleHandCheckerTest {
         for (int i = 0; i < 7; i++) {
             assertEquals(cards[i], expected[i]);
         }
+        System.out.println("Passed!");
     }
     
     @Test
@@ -110,8 +115,7 @@ public class SimpleHandCheckerTest {
         for (int i = 0; i < 7; i++) {
             assertEquals(cards[i], expected[i]);
         }
-        
-        
+        System.out.println("Passed!");
     }
 
 
@@ -133,7 +137,26 @@ public class SimpleHandCheckerTest {
         boolean sortedResult = SimpleHandChecker.ensureDescSorted(sorted);
         assertTrue(sortedResult);
         assertFalse(unsResult);
-
+System.out.println("Passed!");
+    }
+    
+     @Test
+    public void testThreeOfKind() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tThree Of Kind");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.CLUBS, SuitSet.TWO);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[2] = new Card(Suit.DIAMONS, SuitSet.KING);
+        cards[3] = new Card(Suit.SPADES, SuitSet.KING);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[5] = new Card(Suit.SPADES, SuitSet.JACK);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.THREEOFKIND);
+        expResult.setCards(new Card[]{cards[1], cards[2], cards[3], cards[0], cards[5], cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
     }
 
 }
