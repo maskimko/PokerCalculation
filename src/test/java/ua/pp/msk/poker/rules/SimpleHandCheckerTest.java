@@ -226,14 +226,61 @@ System.out.println("Passed!");
         cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
         cards[1] = new Card(Suit.CLUBS, SuitSet.QUEEN);
         cards[2] = new Card(Suit.HEARTS, SuitSet.JACK);
-        cards[3] = new Card(Suit.DIAMONS, SuitSet.NINE);
-        cards[4] = new Card(Suit.HEARTS, SuitSet.TEN);
+        cards[3] = new Card(Suit.DIAMONS, SuitSet.TEN);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.ACE);
         SimpleHandChecker instance = new SimpleHandChecker();
         Hand expResult = new Hand();
         expResult.setCombination(Combination.STRAIGHT);
         expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        cards = new Card[7];
+        cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[1] = new Card(Suit.CLUBS, SuitSet.QUEEN);
+        cards[2] = new Card(Suit.HEARTS, SuitSet.JACK);
+        cards[3] = new Card(Suit.DIAMONS, SuitSet.TWO);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.ACE);
+        expResult = new Hand();
+        expResult.setCombination(Combination.STRAIGHT);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+         result = instance.checkHand(cards);
+        assertEquals(expResult, result);
         System.out.println("Passed!");
+    }
+    
+      public void testStraightFlush() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tStraight Flush");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[2] = new Card(Suit.HEARTS, SuitSet.JACK);
+        cards[3] = new Card(Suit.HEARTS, SuitSet.TEN);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.NINE);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.STRAIGHTFLUSH);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+        System.out.println("Passed!");
+    }
+      
+       public void testRoyalFlush() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tRoyal Flush");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[2] = new Card(Suit.HEARTS, SuitSet.JACK);
+        cards[3] = new Card(Suit.HEARTS, SuitSet.TEN);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.ACE);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.ROYALFLUSH);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+        System.out.println("Passed! You are lucky!");
     }
 }
