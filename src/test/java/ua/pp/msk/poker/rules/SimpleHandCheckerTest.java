@@ -215,4 +215,25 @@ System.out.println("Passed!");
         assertEquals(expResult, result);
         System.out.println("Passed!");
     }
+    
+    
+    //TODO implement test of cycle straights
+     @Test
+    public void testStraight() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tStraight");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[1] = new Card(Suit.CLUBS, SuitSet.QUEEN);
+        cards[2] = new Card(Suit.HEARTS, SuitSet.JACK);
+        cards[3] = new Card(Suit.DIAMONS, SuitSet.NINE);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.TEN);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.STRAIGHT);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+        System.out.println("Passed!");
+    }
 }

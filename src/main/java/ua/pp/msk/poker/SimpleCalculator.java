@@ -16,7 +16,7 @@ import ua.pp.msk.poker.rules.Combination;
 public class SimpleCalculator {
 
     public static void main(String[] args) {
-        int playersNumber = 4;
+        int playersNumber = 5;
         int gamesNumber = 100000;
         long startTime = System.currentTimeMillis();
         startSimulation(playersNumber, gamesNumber);

@@ -47,12 +47,16 @@ public class SimpleHandChecker implements HandChecker {
         Hand hand = new Hand();
         Map<SuitSet, List<Card>> cardValueMap = getCardValueMap(cards);
         Map<Suit, List<Card>> cardSuitMap = getCardSuitMap(cards);
-        
+
         boolean onePair = isOnePair(cards, cardValueMap);
         boolean threeOfKind = isThreeOfKind(cards, cardValueMap);
         boolean twoPairs = false;
-        boolean fourOfKind = false;
-        boolean flush = false;
+        boolean fourOfKind = isFourOfKind(cards, cardValueMap);
+        boolean flush = isFlush(cardSuitMap);
+        boolean straight = isStraight(cardValueMap);
+        if (threeOfKind) {
+            hand = makeThreeOfKindHand(cards, cardValueMap);
+        }
         if (onePair) {
             if (threeOfKind) {
                 hand = makeFullHouseHand(cardValueMap);
@@ -64,21 +68,16 @@ public class SimpleHandChecker implements HandChecker {
                     hand = makeOnePairHand(cards, cardValueMap);
                 }
             }
-        } else {
-            
-            if (threeOfKind) {
-                hand = makeThreeOfKindHand(cards, cardValueMap);
-            }
-            fourOfKind = isFourOfKind(cards, cardValueMap);
+        }
 
-            if (fourOfKind) {
-                hand = makeFourOfKindHand(cards, cardValueMap);
-            }
-            
-            flush = isFlush(cardSuitMap);
-            if (flush){
-                hand = makeFlushHand(cardSuitMap);
-            }
+        if (straight) {
+            hand = makeStraight(cardValueMap);
+        }
+        if (flush) {
+            hand = makeFlushHand(cardSuitMap);
+        }
+        if (fourOfKind) {
+            hand = makeFourOfKindHand(cards, cardValueMap);
         }
 
         //TODO implement Straight
@@ -92,25 +91,28 @@ public class SimpleHandChecker implements HandChecker {
         }
         return hand;
     }
-/**
- * 
- * @param cardSuitMap Consumes a map for suit to card list
- * @return Returns true is there is a flush
- */
-    private boolean isFlush(Map<Suit, List<Card>> cardSuitMap){
+
+    /**
+     *
+     * @param cardSuitMap Consumes a map for suit to card list
+     * @return Returns true is there is a flush
+     */
+    private boolean isFlush(Map<Suit, List<Card>> cardSuitMap) {
         Iterator<Map.Entry<Suit, List<Card>>> iterator = cardSuitMap.entrySet().iterator();
-        while (iterator.hasNext()){
-            if (iterator.next().getValue().size() == 5) return true;
+        while (iterator.hasNext()) {
+            if (iterator.next().getValue().size() == 5) {
+                return true;
+            }
         }
         return false;
     }
-    
+
     //TODO Fix catching and throwing exceptions is this class
-    private Hand makeFlushHand(Map<Suit, List<Card>> cardSuitMap) throws CardException{
+    private Hand makeFlushHand(Map<Suit, List<Card>> cardSuitMap) throws CardException {
         Hand hand = new Hand();
         hand.setCombination(Combination.FLUSH);
         Iterator<Map.Entry<Suit, List<Card>>> iterator = cardSuitMap.entrySet().iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<Suit, List<Card>> next = iterator.next();
             if (next.getValue().size() == 5) {
                 hand.setCards(next.getValue().toArray(new Card[0]));
@@ -118,7 +120,7 @@ public class SimpleHandChecker implements HandChecker {
         }
         return hand;
     }
-    
+
     private boolean isFourOfKind(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
         boolean result = false;
         Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
@@ -165,11 +167,12 @@ public class SimpleHandChecker implements HandChecker {
         }
         return hand;
     }
-/**
- * 
- * @param cardValueMap Consumes a map of card value to card list
- * @return Returns Full House hand
- */
+
+    /**
+     *
+     * @param cardValueMap Consumes a map of card value to card list
+     * @return Returns Full House hand
+     */
     private Hand makeFullHouseHand(Map<SuitSet, List<Card>> cardValueMap) {
         Hand hand = new Hand();
         hand.setCombination(Combination.FULLHOUSE);
@@ -218,9 +221,110 @@ public class SimpleHandChecker implements HandChecker {
         return hand;
     }
 
-    private boolean isOnePair(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
-        boolean result = false;
+    private boolean isStraight(Map<SuitSet, List<Card>> cardMap) {
+        byte inRow = 0;
+        SuitSet expected = null;
         Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
+        while (iterator.hasNext() && inRow < 5) {
+            Map.Entry<SuitSet, List<Card>> entry = iterator.next();
+            if (expected == null || inRow == 0) {
+                if (!entry.getValue().isEmpty()) {
+                    int ordinal = entry.getValue().get(0).getValue().ordinal();
+                    if (ordinal == 0) {
+                        continue;
+                    }
+                    expected = SuitSet.values()[--ordinal];
+                    inRow++;
+                }
+            } else {
+                if (!entry.getValue().isEmpty()) {
+                    if (entry.getValue().get(0).getValue().equals(expected)) {
+                        int ordinal = entry.getValue().get(0).getValue().ordinal();
+                        if (ordinal == 0) {
+                            continue;
+                        }
+                        expected = SuitSet.values()[--ordinal];
+                        inRow++;
+                    }
+                } else {
+                    inRow = 0;
+                }
+            }
+        }
+        return inRow == 5;
+    }
+
+    private boolean isStraightFlush(Map<SuitSet, List<Card>> cardMap) {
+        byte inRow = 0;
+        SuitSet expected = null;
+        Suit expectedSuit = null;
+        Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
+        while (iterator.hasNext() && inRow < 5) {
+            Map.Entry<SuitSet, List<Card>> entry = iterator.next();
+            if (expected == null || inRow == 0) {
+                if (!entry.getValue().isEmpty()) {
+                    int ordinal = entry.getValue().get(0).getValue().ordinal();
+                    if (ordinal == 0) {
+                        continue;
+                    }
+                    expected = SuitSet.values()[--ordinal];
+                    expectedSuit = entry.getValue().get(0).getSuit();
+                    inRow++;
+                }
+            } else {
+                if (!entry.getValue().isEmpty()) {
+                    if (entry.getValue().get(0).getValue().equals(expected) && entry.getValue().get(0).getSuit().equals(expectedSuit)) {
+                        int ordinal = entry.getValue().get(0).getValue().ordinal();
+                        if (ordinal == 0) {
+                            continue;
+                        }
+                        expected = SuitSet.values()[--ordinal];
+                        inRow++;
+                    }
+                } else {
+                    inRow = 0;
+                }
+            }
+        }
+        return inRow == 5;
+    }
+
+    private Hand makeStraight(Map<SuitSet, List<Card>> cardMap) throws CardException {
+        Hand hand = new Hand();
+        hand.setCombination(Combination.STRAIGHT);
+        Card[] handCards = new Card[5];
+        int inRow = 0;
+        Arrays.fill(handCards, null);
+        SuitSet expected = null;
+        Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
+        while (iterator.hasNext() && inRow < 5) {
+            Map.Entry<SuitSet, List<Card>> entry = iterator.next();
+            if (expected == null || inRow == 0) {
+                if (!entry.getValue().isEmpty()) {
+                    int ordinal = entry.getValue().get(0).getValue().ordinal();
+                    expected = SuitSet.values()[--ordinal];
+                    handCards[inRow++] = entry.getValue().get(0);
+                }
+            } else {
+                if (!entry.getValue().isEmpty()) {
+                    if (entry.getValue().get(0).getValue().equals(expected)) {
+                        int ordinal = entry.getValue().get(0).getValue().ordinal();
+                        expected = SuitSet.values()[--ordinal];
+                        handCards[inRow++] = entry.getValue().get(0);
+                    }
+                } else {
+                    inRow = 0;
+                    Arrays.fill(handCards, null);
+                }
+            }
+        }
+        hand.setCards(handCards);
+        return hand;
+    }
+
+    private boolean isOnePair(Card[] cards, Map<SuitSet, List<Card>> cardValueMap) throws CardException {
+        boolean result = false;
+        Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardValueMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<SuitSet, List<Card>> entry = iterator.next();
             if (entry.getValue().size() == 2) {
@@ -303,14 +407,14 @@ public class SimpleHandChecker implements HandChecker {
         }
         return cardMap;
     }
-    
-    private Map<Suit, List<Card>> getCardSuitMap(Card[] cardsInGame){
+
+    private Map<Suit, List<Card>> getCardSuitMap(Card[] cardsInGame) {
         Map<Suit, List<Card>> cardMap = new TreeMap<>();
-        for (Suit s : Suit.values()){
+        for (Suit s : Suit.values()) {
             cardMap.put(s, new LinkedList<>());
         }
-        for (Card card : cardsInGame){
-            if (card != null ){
+        for (Card card : cardsInGame) {
+            if (card != null) {
                 cardMap.get(card.getSuit()).add(card);
             }
         }
