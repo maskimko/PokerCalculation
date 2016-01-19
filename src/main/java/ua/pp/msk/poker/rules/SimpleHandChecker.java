@@ -26,7 +26,6 @@ import ua.pp.msk.poker.exceptions.CardOrderException;
  */
 public class SimpleHandChecker implements HandChecker {
 
-
     /**
      * Check what combination is in game
      *
@@ -47,23 +46,27 @@ public class SimpleHandChecker implements HandChecker {
         Hand hand = new Hand();
         Map<SuitSet, List<Card>> cardMap = getCardValueMap(cards);
         boolean onePair = isOnePair(cards, cardMap);
-        boolean twoPairs = false;
-        boolean threeOfKind = false;
-        boolean fourOfKind = false;
 
+        boolean threeOfKind = isThreeOfKind(cards, cardMap);
+        boolean twoPairs = false;
+        boolean fourOfKind = false;
         if (onePair) {
-            twoPairs = isTwoPairs(cards, cardMap);
-            if (twoPairs) {
-                hand = makeTwoPairsHand(cards, cardMap);
+            if (threeOfKind) {
+                hand = makeFullHouseHand(cardMap);
             } else {
-                hand = makeOnePairHand(cards, cardMap);
+                twoPairs = isTwoPairs(cards, cardMap);
+                if (twoPairs) {
+                    hand = makeTwoPairsHand(cards, cardMap);
+                } else {
+                    hand = makeOnePairHand(cards, cardMap);
+                }
             }
         } else {
-            threeOfKind = isThreeOfKind(cards, cardMap);
-            fourOfKind = isFourOfKind(cards, cardMap);
-            if (threeOfKind){
+            if (threeOfKind) {
                 hand = makeThreeOfKindHand(cards, cardMap);
             }
+            fourOfKind = isFourOfKind(cards, cardMap);
+
             if (fourOfKind) {
                 hand = makeFourOfKindHand(cards, cardMap);
             }
@@ -93,33 +96,6 @@ public class SimpleHandChecker implements HandChecker {
             }
         }
         return result;
-
-//        sort(cards);
-//        //Check for nulls
-//        int notNulls = cards.length;
-//        for (int j = 0; j < cards.length; j++) {
-//            if (cards[j] == null) {
-//                notNulls--;
-//            }
-//        }
-//        if (notNulls >= 4) {
-//            Card[] handCards = hand.getCards();
-//            Arrays.fill(handCards, null);
-//            for (int i = 0; i < cards.length - 3; i++) {
-//                if (cards[i] != null && cards[i + 1] != null && cards[i + 2] != null && cards[i + 3] != null) {
-//                    if (cards[i].getValue().equals(cards[i + 1].getValue()) && cards[i].getValue().equals(cards[i + 2].getValue()) && cards[i].getValue().equals(cards[i + 3].getValue())) {
-//                        handCards[0] = cards[i];
-//                        handCards[1] = cards[i + 1];
-//                        handCards[2] = cards[i + 2];
-//                        handCards[3] = cards[i + 3];
-//                        handCards = fillUpTheHand(cards, handCards);
-//                        hand.setCards(handCards);
-//                        hand.setCombination(Combination.FOUROFKIND);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
     }
 
     private boolean isThreeOfKind(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
@@ -134,32 +110,6 @@ public class SimpleHandChecker implements HandChecker {
             }
         }
         return result;
-
-//        sort(cards);
-//        //Check for nulls
-//        int notNulls = cards.length;
-//        for (int j = 0; j < cards.length; j++) {
-//            if (cards[j] == null) {
-//                notNulls--;
-//            }
-//        }
-//        if (notNulls >= 3) {
-//            Card[] handCards = hand.getCards();
-//            Arrays.fill(handCards, null);
-//            for (int i = 0; i < cards.length - 2; i++) {
-//                if (cards[i] != null && cards[i + 1] != null && cards[i + 2] != null) {
-//                    if (cards[i].getValue().equals(cards[i + 1].getValue()) && cards[i].getValue().equals(cards[i + 2].getValue())) {
-//                        handCards[0] = cards[i];
-//                        handCards[1] = cards[i + 1];
-//                        handCards[2] = cards[i + 2];
-//                        handCards = fillUpTheHand(cards, handCards);
-//                        hand.setCards(handCards);
-//                        hand.setCombination(Combination.THREEOFKIND);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
     }
 
     private Hand makeThreeOfKindHand(Card[] cardsInGame, Map<SuitSet, List<Card>> cardMap) {
@@ -177,6 +127,35 @@ public class SimpleHandChecker implements HandChecker {
                     LoggerFactory.getLogger(this.getClass()).error("Cannot make hand with Three Of Kind combination ", ex);
                 }
             }
+        }
+        return hand;
+    }
+
+    private Hand makeFullHouseHand(Map<SuitSet, List<Card>> cardMap) {
+        Hand hand = new Hand();
+        hand.setCombination(Combination.FULLHOUSE);
+        Card[] handCards = new Card[5];
+        byte hp = 0;
+        for (Map.Entry<SuitSet, List<Card>> entry : cardMap.entrySet()) {
+            if (entry.getValue().size() == 3) {
+                handCards[hp++] = entry.getValue().get(0);
+                handCards[hp++] = entry.getValue().get(1);
+                handCards[hp++] = entry.getValue().get(2);
+            }
+            if (entry.getValue().size() == 2) {
+                handCards[hp++] = entry.getValue().get(0);
+                handCards[hp++] = entry.getValue().get(1);
+            }
+            if (hp == 5) {
+                break;
+            }
+        }
+        try {
+            hand.setCards(handCards);
+        } catch (CardOrderException e) {
+            LoggerFactory.getLogger(this.getClass()).error("Cannot make Three Of Kind combination ", e);
+        } catch (CardException ex) {
+            LoggerFactory.getLogger(this.getClass()).error("Cannot make hand with Three Of Kind combination ", ex);
         }
         return hand;
     }
@@ -202,23 +181,6 @@ public class SimpleHandChecker implements HandChecker {
 
     private boolean isOnePair(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
         boolean result = false;
-//        sort(cards);
-//        for (int i = 0; i < cards.length - 1; i++) {
-//            if (cards[i] != null) {
-//                if (cards[i + 1] != null && cards[i].getValue().equals(cards[i + 1].getValue())) {
-//                    try {
-//                        result = true;
-//                        Card[] handCards = fillUpTheHand(cards, new Card[]{cards[i], cards[i + 1]});
-//                        hand.setCards(handCards);
-//                        hand.setCombination(Combination.ONEPAIR);
-//                        break;
-//                    } catch (CardException ex) {
-//                        LoggerFactory.getLogger(this.getClass()).error("Card quantity error", ex);
-//                    }
-//                }
-//            }
-//        }
-
         Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<SuitSet, List<Card>> entry = iterator.next();
@@ -252,23 +214,6 @@ public class SimpleHandChecker implements HandChecker {
 
     public boolean isTwoPairs(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
         byte pairs = 0;
-//        byte pairsDetected = 0;
-//        byte handPointer = 0;
-//        Card[] handCards = hand.getCards();
-//        Arrays.fill(handCards, null);
-//        sort(cardsInGame);
-//        for (int i = 0; i < cardsInGame.length - 1 && pairsDetected != 2; i++) {
-//            if (cardsInGame[i] != null && cardsInGame[i + 1] != null && cardsInGame[i].getValue().equals(cardsInGame[i + 1].getValue())) {
-//                handCards[handPointer++] = cardsInGame[i];
-//                handCards[handPointer++] = cardsInGame[i + 1];
-//                pairsDetected++;
-//            }
-//        }
-//        handCards = fillUpTheHand(cardsInGame, handCards);
-//        hand.setCards(handCards);
-//        if (pairsDetected == 2) {
-//            hand.setCombination(Combination.TWOPAIRS);
-//        }
         for (Map.Entry<SuitSet, List<Card>> entry : cardMap.entrySet()) {
             if (entry.getValue().size() == 2) {
                 pairs++;

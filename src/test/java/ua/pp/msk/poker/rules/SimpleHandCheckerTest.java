@@ -156,12 +156,13 @@ System.out.println("Passed!");
         expResult.setCards(new Card[]{cards[1], cards[2], cards[3], cards[4], cards[0]});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        System.out.println("Passed!");
     }
     
      @Test
     public void testFourOfKind() throws Exception {
         System.out.println("checkHand");
-        System.out.println("\tThree Of Kind");
+        System.out.println("\tFour Of Kind");
         Card[] cards = new Card[7];
         cards[0] = new Card(Suit.CLUBS, SuitSet.KING);
         cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
@@ -174,6 +175,26 @@ System.out.println("Passed!");
         expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
         Hand result = instance.checkHand(cards);
         assertEquals(expResult, result);
+        System.out.println("Passed!");
+    }
+    
+      @Test
+    public void testFullHouse() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tThree Of Kind");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.CLUBS, SuitSet.KING);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[2] = new Card(Suit.DIAMONS, SuitSet.KING);
+        cards[3] = new Card(Suit.SPADES, SuitSet.SEVEN);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.SEVEN);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.FULLHOUSE);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+        System.out.println("Passed!");
     }
 
 }
