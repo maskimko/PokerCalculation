@@ -54,6 +54,8 @@ public class SimpleHandChecker implements HandChecker {
         boolean fourOfKind = isFourOfKind(cards, cardValueMap);
         boolean flush = isFlush(cardSuitMap);
         boolean straight = isStraight(cardValueMap);
+        boolean straightFlush = false;
+        boolean royalFlush = false;
         if (threeOfKind) {
             hand = makeThreeOfKindHand(cards, cardValueMap);
         }
@@ -79,9 +81,18 @@ public class SimpleHandChecker implements HandChecker {
         if (fourOfKind) {
             hand = makeFourOfKindHand(cards, cardValueMap);
         }
+        if (straight && flush){
+            straightFlush = isStraightFlush(cardValueMap);
+            if (straightFlush){
+                hand.setCombination(Combination.STRAIGHTFLUSH);
+                royalFlush = isRoyalFlush(hand);
+                if (royalFlush){
+                    hand.setCombination(Combination.ROYALFLUSH);
+                }
+            }
+        }
+        
 
-        //TODO implement Straight
-        //TODO implement Flush
         //TODO implement Straight Flush
         //TODO implement Royal Flush
         if (hand.getCombination().equals(Combination.HIGHHAND)) {
@@ -287,6 +298,17 @@ public class SimpleHandChecker implements HandChecker {
             }
         }
         return inRow == 5;
+    }
+    
+    private boolean isRoyalFlush(Hand hand){
+        if (hand.getCombination().equals(Combination.STRAIGHTFLUSH)){
+            Card[] cards = hand.getCards();
+            sort(cards);
+            if (cards[0].getValue().equals(SuitSet.ACE)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private Hand makeStraight(Map<SuitSet, List<Card>> cardMap) throws CardException {
