@@ -17,7 +17,7 @@ public class SimpleCalculator {
 
     public static void main(String[] args) {
         int playersNumber = 4;
-        int gamesNumber = 1000000;
+        int gamesNumber = 100000;
         long startTime = System.currentTimeMillis();
         startSimulation(playersNumber, gamesNumber);
         long endTime = System.currentTimeMillis();

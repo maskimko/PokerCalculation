@@ -197,4 +197,22 @@ System.out.println("Passed!");
         System.out.println("Passed!");
     }
 
+       @Test
+    public void testFlush() throws Exception {
+        System.out.println("checkHand");
+        System.out.println("\tFlush");
+        Card[] cards = new Card[7];
+        cards[0] = new Card(Suit.HEARTS, SuitSet.KING);
+        cards[1] = new Card(Suit.HEARTS, SuitSet.QUEEN);
+        cards[2] = new Card(Suit.HEARTS, SuitSet.FOUR);
+        cards[3] = new Card(Suit.HEARTS, SuitSet.FIVE);
+        cards[4] = new Card(Suit.HEARTS, SuitSet.TEN);
+        SimpleHandChecker instance = new SimpleHandChecker();
+        Hand expResult = new Hand();
+        expResult.setCombination(Combination.FLUSH);
+        expResult.setCards(new Card[]{cards[0], cards[2], cards[1], cards[3],  cards[4]});
+        Hand result = instance.checkHand(cards);
+        assertEquals(expResult, result);
+        System.out.println("Passed!");
+    }
 }

@@ -18,6 +18,7 @@ import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
 import ua.pp.msk.poker.exceptions.MissingCardException;
 import org.slf4j.LoggerFactory;
+import ua.pp.msk.poker.deck.Suit;
 import ua.pp.msk.poker.exceptions.CardOrderException;
 
 /**
@@ -44,31 +45,39 @@ public class SimpleHandChecker implements HandChecker {
             throw new ExtraCardException(String.format("Extra %d cards. it should be at most 7 cards", cards.length - 7));
         }
         Hand hand = new Hand();
-        Map<SuitSet, List<Card>> cardMap = getCardValueMap(cards);
-        boolean onePair = isOnePair(cards, cardMap);
-
-        boolean threeOfKind = isThreeOfKind(cards, cardMap);
+        Map<SuitSet, List<Card>> cardValueMap = getCardValueMap(cards);
+        Map<Suit, List<Card>> cardSuitMap = getCardSuitMap(cards);
+        
+        boolean onePair = isOnePair(cards, cardValueMap);
+        boolean threeOfKind = isThreeOfKind(cards, cardValueMap);
         boolean twoPairs = false;
         boolean fourOfKind = false;
+        boolean flush = false;
         if (onePair) {
             if (threeOfKind) {
-                hand = makeFullHouseHand(cardMap);
+                hand = makeFullHouseHand(cardValueMap);
             } else {
-                twoPairs = isTwoPairs(cards, cardMap);
+                twoPairs = isTwoPairs(cards, cardValueMap);
                 if (twoPairs) {
-                    hand = makeTwoPairsHand(cards, cardMap);
+                    hand = makeTwoPairsHand(cards, cardValueMap);
                 } else {
-                    hand = makeOnePairHand(cards, cardMap);
+                    hand = makeOnePairHand(cards, cardValueMap);
                 }
             }
         } else {
+            
             if (threeOfKind) {
-                hand = makeThreeOfKindHand(cards, cardMap);
+                hand = makeThreeOfKindHand(cards, cardValueMap);
             }
-            fourOfKind = isFourOfKind(cards, cardMap);
+            fourOfKind = isFourOfKind(cards, cardValueMap);
 
             if (fourOfKind) {
-                hand = makeFourOfKindHand(cards, cardMap);
+                hand = makeFourOfKindHand(cards, cardValueMap);
+            }
+            
+            flush = isFlush(cardSuitMap);
+            if (flush){
+                hand = makeFlushHand(cardSuitMap);
             }
         }
 
@@ -83,7 +92,33 @@ public class SimpleHandChecker implements HandChecker {
         }
         return hand;
     }
-
+/**
+ * 
+ * @param cardSuitMap Consumes a map for suit to card list
+ * @return Returns true is there is a flush
+ */
+    private boolean isFlush(Map<Suit, List<Card>> cardSuitMap){
+        Iterator<Map.Entry<Suit, List<Card>>> iterator = cardSuitMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            if (iterator.next().getValue().size() == 5) return true;
+        }
+        return false;
+    }
+    
+    //TODO Fix catching and throwing exceptions is this class
+    private Hand makeFlushHand(Map<Suit, List<Card>> cardSuitMap) throws CardException{
+        Hand hand = new Hand();
+        hand.setCombination(Combination.FLUSH);
+        Iterator<Map.Entry<Suit, List<Card>>> iterator = cardSuitMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<Suit, List<Card>> next = iterator.next();
+            if (next.getValue().size() == 5) {
+                hand.setCards(next.getValue().toArray(new Card[0]));
+            }
+        }
+        return hand;
+    }
+    
     private boolean isFourOfKind(Card[] cards, Map<SuitSet, List<Card>> cardMap) throws CardException {
         boolean result = false;
         Iterator<Map.Entry<SuitSet, List<Card>>> iterator = cardMap.entrySet().iterator();
@@ -130,13 +165,17 @@ public class SimpleHandChecker implements HandChecker {
         }
         return hand;
     }
-
-    private Hand makeFullHouseHand(Map<SuitSet, List<Card>> cardMap) {
+/**
+ * 
+ * @param cardValueMap Consumes a map of card value to card list
+ * @return Returns Full House hand
+ */
+    private Hand makeFullHouseHand(Map<SuitSet, List<Card>> cardValueMap) {
         Hand hand = new Hand();
         hand.setCombination(Combination.FULLHOUSE);
         Card[] handCards = new Card[5];
         byte hp = 0;
-        for (Map.Entry<SuitSet, List<Card>> entry : cardMap.entrySet()) {
+        for (Map.Entry<SuitSet, List<Card>> entry : cardValueMap.entrySet()) {
             if (entry.getValue().size() == 3) {
                 handCards[hp++] = entry.getValue().get(0);
                 handCards[hp++] = entry.getValue().get(1);
@@ -251,15 +290,28 @@ public class SimpleHandChecker implements HandChecker {
         return hand;
     }
 
-    private Map<SuitSet, List<Card>> getCardValueMap(Card[] cards) {
+    private Map<SuitSet, List<Card>> getCardValueMap(Card[] cardsInGame) {
         Map<SuitSet, List<Card>> cardMap = new TreeMap<>(Collections.reverseOrder());
         for (SuitSet ss : SuitSet.values()) {
             cardMap.put(ss, new LinkedList<>());
         }
-        for (Card card : cards) {
+        for (Card card : cardsInGame) {
             if (card != null) {
                 SuitSet value = card.getValue();
                 cardMap.get(value).add(card);
+            }
+        }
+        return cardMap;
+    }
+    
+    private Map<Suit, List<Card>> getCardSuitMap(Card[] cardsInGame){
+        Map<Suit, List<Card>> cardMap = new TreeMap<>();
+        for (Suit s : Suit.values()){
+            cardMap.put(s, new LinkedList<>());
+        }
+        for (Card card : cardsInGame){
+            if (card != null ){
+                cardMap.get(card.getSuit()).add(card);
             }
         }
         return cardMap;
