@@ -8,6 +8,7 @@ package ua.pp.msk.poker;
 import ua.pp.msk.poker.stat.Statistic;
 import java.util.Map;
 import ua.pp.msk.poker.rules.Combination;
+import ua.pp.msk.poker.stat.GameStage;
 
 /**
  *
@@ -17,7 +18,7 @@ public class SimpleCalculator {
 
     public static void main(String[] args) {
         int playersNumber = 7;
-        int gamesNumber = 10000;
+        int gamesNumber = 1000;
         long startTime = System.currentTimeMillis();
         startSimulation(playersNumber, gamesNumber);
         long endTime = System.currentTimeMillis();
@@ -29,30 +30,20 @@ public class SimpleCalculator {
     private static void printStatistic() {
         System.out.println("\nStatistics:");
         System.out.println("Combinations analyzed: " + Statistic.getRegistrationsCount());
-//        System.out.println("\n\n------Pre Flop Statistic-------------");
-//        System.out.println(String.format("%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
-//        System.out.println("-------------------------------------");
-//        for (Map.Entry<Combination, Integer> entry : Statistic.getPreFlopStatistic().entrySet()) {
-//            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
-//        }
-//        System.out.println("\n\n----------Flop Statistic-------------");
-//        System.out.println(String.format("%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
-//        System.out.println("-------------------------------------");
-//        for (Map.Entry<Combination, Integer> entry : Statistic.getFlopStatistic().entrySet()) {
-//            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
-//        }
-        printGameStageStatistic("Pre-Flop", Statistic.getPreFlopStatistic());
-        printGameStageStatistic("Flop", Statistic.getFlopStatistic());
-        printGameStageStatistic("Turn", Statistic.getTurnStatistic());
-        printGameStageStatistic("River", Statistic.getRiverStatistic());
+        printGameStageStatistic(GameStage.preflop, Statistic.getPreFlopStatistic());
+        printGameStageStatistic(GameStage.flop, Statistic.getFlopStatistic());
+        printGameStageStatistic(GameStage.turn, Statistic.getTurnStatistic());
+        printGameStageStatistic(GameStage.river, Statistic.getRiverStatistic());
     }
     
-    private static void printGameStageStatistic(String stage, Map<Combination, Integer> stats){
-        System.out.println("\n\n----------"+stage+" Statistic-------------");
-        System.out.println(String.format("%15s\t%9s %9s", "Combination", "Occurences", "Percentage"));
-        System.out.println("-------------------------------------");
+    private static void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats){
+        System.out.println("\n\n---------------------"+stage.getName()+" Statistic---------------------");
+        System.out.println(String.format("%15s\t%10s %10s %10s", "Combination", "Occurences", stage.getName() + " %", "Total %"));
+        System.out.println("---------------------------------------------------------");
         for (Map.Entry<Combination, Integer> entry : stats.entrySet()) {
-            System.out.println(String.format("%15s\t%9s %9.3f%%", entry.getKey().name(), entry.getValue(), ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
+            System.out.println(String.format("%15s\t%10s %9.3f%% %9.5f%%", entry.getKey().name(), entry.getValue(), 
+                    ((double) entry.getValue()) * 100/Statistic.getGameStageAnalyzedCombinationsCount(stage),
+                    ((double) entry.getValue()) * 100 / Statistic.getRegistrationsCount()));
         }
     }
 
