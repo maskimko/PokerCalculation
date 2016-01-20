@@ -40,6 +40,10 @@ public class Dealer {
         //checkHands(onTable);
         deckPointer = showFlop(deck, deckPointer, onTable);
         checkHands(onTable);
+        deckPointer = showTurn(deck, deckPointer, onTable);
+        checkHands(onTable);
+        showRiver(deck, deckPointer, onTable);
+        checkHands(onTable);
     }
     
     /**
@@ -105,6 +109,21 @@ public class Dealer {
             table[i] = cardsInDeck[deckPointer];
             deckPointer +=2;
         }
+        Statistic.nextGameStage();
+        return deckPointer;
+    }
+    
+    private int showTurn(Deck deck, int deckPointer, Card[] table){
+        Card[] cardsInDeck = deck.getCards();
+        table[3] = cardsInDeck[deckPointer];
+        deckPointer +=2;
+        Statistic.nextGameStage();
+        return deckPointer;
+    }
+     private int showRiver(Deck deck, int deckPointer, Card[] table){
+        Card[] cardsInDeck = deck.getCards();
+        table[4] = cardsInDeck[deckPointer];
+        deckPointer +=2;
         Statistic.nextGameStage();
         return deckPointer;
     }
