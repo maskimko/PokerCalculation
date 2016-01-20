@@ -55,13 +55,12 @@ public class Dealer {
     private int giveCards(Player[] players, Deck deck){
         Statistic.resetStage();
         int pointer = 0;
-        for (int i = 0; i < players.length; ){
+        for (int i = 0; i < players.length; i++){
             if (players[i] != null) {
-                Card[] playerCards = new Card[]{deck.getCards()[i], deck.getCards()[i+2]};
+                Card[] playerCards = new Card[]{deck.getCards()[pointer], deck.getCards()[pointer+2]};
                 try {
                     players[i].receiveCards(playerCards);
-                    i +=4;
-                    pointer = i;
+                    pointer +=4;
                 } catch (CardException ex) {
                     LoggerFactory.getLogger(this.getClass()).error("Player " + players[i].getName() + " cannot receive cards", ex);
                 }
