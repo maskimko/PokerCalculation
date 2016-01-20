@@ -189,15 +189,19 @@ public class SimpleHandChecker implements HandChecker {
         hand.setCombination(Combination.FULLHOUSE);
         Card[] handCards = new Card[5];
         byte hp = 0;
+        boolean pairDone = false;
+        boolean setDone = false;
         for (Map.Entry<SuitSet, List<Card>> entry : cardValueMap.entrySet()) {
-            if (entry.getValue().size() == 3) {
+            if (entry.getValue().size() == 3 && !setDone) {
                 handCards[hp++] = entry.getValue().get(0);
                 handCards[hp++] = entry.getValue().get(1);
                 handCards[hp++] = entry.getValue().get(2);
+                setDone = true;
             }
-            if (entry.getValue().size() == 2) {
+            if (entry.getValue().size() == 2 && !pairDone) {
                 handCards[hp++] = entry.getValue().get(0);
                 handCards[hp++] = entry.getValue().get(1);
+                pairDone = true;
             }
             if (hp == 5) {
                 break;
