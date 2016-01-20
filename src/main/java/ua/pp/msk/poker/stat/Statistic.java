@@ -92,4 +92,12 @@ public class Statistic {
         int times = stageOccurences.get(gs);
         stageOccurences.put(gs, ++times);
     }
+    /**
+     * 
+     * @param gs
+     * @return Returns how much combinations of given GameStage where analyzed 
+     */
+    public static int getGameStageAnalyzedCombinationsCount(GameStage gs){
+        return stageOccurences.get(gs);
+    }
 }

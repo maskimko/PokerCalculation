@@ -10,5 +10,14 @@ package ua.pp.msk.poker.stat;
  * @author maskimko
  */
 public enum GameStage {
-    preflop,flop,turn,river;
+    preflop("Pre-Flop"),flop("Flop"),turn("Turn"),river("River");
+    
+    private final String name;
+    GameStage(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return name;
+    }
 }
