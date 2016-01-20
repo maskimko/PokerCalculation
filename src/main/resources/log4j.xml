@@ -10,7 +10,7 @@
     </appender> 
     <appender name="file" class="org.apache.log4j.RollingFileAppender">
         <param name="append" value="false"/>
-        <param name="file" value="/tmp/poker.out"/>
+        <param name="file" value="poker.log"/>
         <param name="maxFileSize" value="1GB" />
         <param name="maxBackupIndex" value="5" />
         <layout class="org.apache.log4j.PatternLayout">
