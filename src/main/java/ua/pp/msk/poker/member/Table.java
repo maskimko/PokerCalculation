@@ -34,7 +34,7 @@ public class Table {
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) {
                 players[i] = p;
-                LoggerFactory.getLogger(this.getClass()).debug(String.format("Player %s took a seat %d", p, i));
+                LoggerFactory.getLogger(this.getClass()).debug(String.format("Player %s took a seat %d", p.getName(), i));
                 registered = true;
                 break;
             }

@@ -7,8 +7,6 @@ package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,8 @@ public class Dealer {
         deckPointer = showTurn(deck, deckPointer, onTable);
         checkHands(onTable);
         showRiver(deck, deckPointer, onTable);
-        checkHands(onTable);
+        Map<Hand, Player> hands = checkHands(onTable);
+        getWinner(hands);
     }
     
     /**
@@ -76,24 +75,26 @@ public class Dealer {
     }
     
     
-    private void checkHands(Card[] onTable) {
-        Map<Hand, Player> hands = new TreeMap<Hand, Player>();
+    private Map<Hand, Player> checkHands(Card[] onTable) {
+        Map<Hand, Player> hands = new TreeMap<>(Collections.reverseOrder());
         Player[] players = table.getPlayers();
         for (int i =0; i< players.length; i++){
             if (players[i] != null){
                 try {
                     Hand hand = players[i].checkHand(onTable);
                     hands.put(hand, players[i]);
-                    
                 } catch (ExtraCardException ex) {
                    LoggerFactory.getLogger(this.getClass()).error(String.format("Extra cards %d are on the table for player %s", onTable.length -5, players[i].getName()), ex);
                 }
             }
         }
-       //MOVE IT TO THE END
-        
+    return hands;   
+    }
+    
+     public  Player getWinner(Map<Hand, Player> hands) {
         Map.Entry<Hand, Player> winner = hands.entrySet().iterator().next();
         LoggerFactory.getLogger(this.getClass()).info(String.format("Winner: %s Won with hand %s", winner.getValue(), winner.getKey()));
+        return winner.getValue();
     }
     
     /**

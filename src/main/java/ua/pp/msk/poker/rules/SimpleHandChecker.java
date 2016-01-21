@@ -406,12 +406,12 @@ public class SimpleHandChecker implements HandChecker {
             if (combinationCards.size() == 4) {
                 try {
                     LoggerFactory.getLogger(this.getClass()).debug(String.format("Found Two Pairs combination: %s %s %s %s", combinationCards.get(0), combinationCards.get(1), combinationCards.get(2), combinationCards.get(3)));
-                    Card[] handCards = fillUpTheHand(cardsInGame, entry.getValue().toArray(new Card[0]));
+                    Card[] handCards = fillUpTheHand(cardsInGame, combinationCards.toArray(new Card[0]));
                     hand.setCards(handCards);
                 } catch (CardOrderException e) {
-                    LoggerFactory.getLogger(this.getClass()).error("Cannot make One Pair combination ", e);
+                    LoggerFactory.getLogger(this.getClass()).error("Cannot make Two Pair combination ", e);
                 } catch (CardException ex) {
-                    LoggerFactory.getLogger(this.getClass()).error("Cannot make hand with One Pair combination ", ex);
+                    LoggerFactory.getLogger(this.getClass()).error("Cannot make hand with Two Pair combination ", ex);
                 }
                 break;
             }
