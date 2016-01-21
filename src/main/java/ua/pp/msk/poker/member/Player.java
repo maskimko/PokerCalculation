@@ -105,4 +105,11 @@ public class Player {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return "Player{" + "name=" + name + '}';
+    }
+
+    
+    
 }

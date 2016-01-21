@@ -6,6 +6,11 @@
 package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.slf4j.LoggerFactory;
 import ua.pp.msk.poker.stat.Statistic;
 import ua.pp.msk.poker.deck.Card;
@@ -72,16 +77,23 @@ public class Dealer {
     
     
     private void checkHands(Card[] onTable) {
+        Map<Hand, Player> hands = new TreeMap<Hand, Player>();
         Player[] players = table.getPlayers();
         for (int i =0; i< players.length; i++){
             if (players[i] != null){
                 try {
                     Hand hand = players[i].checkHand(onTable);
+                    hands.put(hand, players[i]);
+                    
                 } catch (ExtraCardException ex) {
                    LoggerFactory.getLogger(this.getClass()).error(String.format("Extra cards %d are on the table for player %s", onTable.length -5, players[i].getName()), ex);
                 }
             }
         }
+       //MOVE IT TO THE END
+        
+        Map.Entry<Hand, Player> winner = hands.entrySet().iterator().next();
+        LoggerFactory.getLogger(this.getClass()).info(String.format("Winner: %s Won with hand %s", winner.getValue(), winner.getKey()));
     }
     
     /**
