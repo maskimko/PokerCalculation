@@ -7,15 +7,19 @@ package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.stat.Statistic;
+import ua.pp.msk.poker.stat.HandStatistic;
 import ua.pp.msk.poker.deck.Card;
+import ua.pp.msk.poker.deck.Pair;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
 import ua.pp.msk.poker.exceptions.FullTableException;
 import ua.pp.msk.poker.exceptions.MissingCardException;
+import ua.pp.msk.poker.rules.Combination;
 import ua.pp.msk.poker.rules.Hand;
 import ua.pp.msk.poker.rules.HandChecker;
 import ua.pp.msk.poker.rules.SimpleHandChecker;
+import ua.pp.msk.poker.stat.Collector;
+import ua.pp.msk.poker.stat.GameStage;
 
 /**
  *
@@ -46,8 +50,12 @@ public class Player {
             }
         } else {
             this.pair = cards;
-            checkHand(new Card[5]);
+            checkHand(new Card[5], GameStage.preflop);
         }
+    }
+    
+    public void receiveCards(Pair pair) throws CardException {
+        receiveCards(pair.getCards());
     }
 
     /**
@@ -64,7 +72,7 @@ public class Player {
      * @return
      * @throws ExtraCardException
      */
-    Hand checkHand(Card[] cards) throws ExtraCardException {
+    Hand checkHand(Card[] cards, GameStage stage) throws ExtraCardException {
         if (cards.length > 5) {
             throw new ExtraCardException(String.format("%d extra cards are on table. There can be from 0 till 5 card maximum after River ", cards.length - 5));
         }
@@ -84,9 +92,7 @@ public class Player {
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
                             getName(), hand.toString(), Arrays.toString(pair), Arrays.toString(cards)));
-            // System.out.println(String.format("Player \"%s\" Got a combination %s", getName(), combination.name()));
-            Statistic.registerOccurance(hand.getCombination());
-
+            Collector.getCollector().registerHand(Combination.HIGHHAND, stage);
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }
@@ -107,7 +113,29 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Player{" + "name=" + name + '}';
+        return "Player(" + name + ')';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Player other = (Player) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
     }
 
     

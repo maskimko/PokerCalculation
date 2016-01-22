@@ -13,7 +13,7 @@ import ua.pp.msk.poker.rules.Combination;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class Statistic {
+public class HandStatistic {
 
     private static final Map<Combination, Integer> preFlopStatistic = new HashMap<>();
     private static final Map<Combination, Integer> flopStatistic = new HashMap<>();
@@ -21,7 +21,6 @@ public class Statistic {
     private static final Map<Combination, Integer> riverStatistic = new HashMap<>();
     private static final Map<GameStage, Integer> stageOccurences = new HashMap<>();
     private static long counter = 0;
-    private static GameStage stage = GameStage.preflop;
 
     static {
         for (Combination c : Combination.values()) {
@@ -35,7 +34,7 @@ public class Statistic {
         }
     }
 
-    public static synchronized void registerOccurance(Combination combination) {
+     static synchronized void registerOccurance(Combination combination, GameStage stage) {
         if (stage.equals(GameStage.preflop)) {
             int current = preFlopStatistic.get(combination);
             preFlopStatistic.put(combination, ++current);
@@ -76,17 +75,8 @@ public class Statistic {
         return counter;
     }
 
-    public static void nextGameStage() {
-        int ordinal = stage.ordinal();
-        stage = GameStage.values()[++ordinal];
-    }
+    
 
-    /**
-     * It should be called every time a new game starts
-     */
-    public static void resetStage() {
-        stage = GameStage.preflop;
-    }
 
     private static void incrementStageOccurance(GameStage gs) {
         int times = stageOccurences.get(gs);

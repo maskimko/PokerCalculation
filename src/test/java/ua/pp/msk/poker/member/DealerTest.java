@@ -5,8 +5,10 @@
  */
 package ua.pp.msk.poker.member;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.BeforeClass;
@@ -40,7 +42,7 @@ public class DealerTest {
     @Test
     public void testGetWinner() {
         System.out.println("getWinner");
-        Map<Hand, Player> hands = new HashMap<>();
+        Map<Hand, Player> hands = new TreeMap<>(Collections.reverseOrder());
         Dealer instance;
         try {
             instance = new Dealer(new Table(5));
@@ -53,25 +55,29 @@ public class DealerTest {
                 new Card(Suit.HEARTS, SuitSet.QUEEN), new Card(Suit.HEARTS, SuitSet.KING)});
             p1h.setCombination(Combination.ONEPAIR);
             hands.put(p1h, p1);
+
             Hand p2h = new Hand();
             p2h.setCards(new Card[]{new Card(Suit.DIAMONS, SuitSet.FOUR),
                 new Card(Suit.SPADES, SuitSet.FOUR), new Card(Suit.SPADES, SuitSet.ACE),
                 new Card(Suit.HEARTS, SuitSet.QUEEN), new Card(Suit.HEARTS, SuitSet.KING)});
+            p2h.setCombination(Combination.ONEPAIR);
             hands.put(p2h, p2);
+
             //Two pairs
             Hand p3h = new Hand();
             p3h.setCards(new Card[]{new Card(Suit.SPADES, SuitSet.FOUR),
                 new Card(Suit.CLUBS, SuitSet.JACK), new Card(Suit.DIAMONS, SuitSet.JACK),
                 new Card(Suit.DIAMONS, SuitSet.FOUR), new Card(Suit.HEARTS, SuitSet.KING)});
+            p3h.setCombination(Combination.TWOPAIRS);
             hands.put(p3h, p3);
 
             Player result = instance.getWinner(hands);
             assertEquals(p3, result);
 
         } catch (TableException ex) {
-            LoggerFactory.getLogger(this.getClass()).error("Connot create a table", ex);
+            LoggerFactory.getLogger(this.getClass()).error("Cannot create a table", ex);
         } catch (CardException ex) {
-            LoggerFactory.getLogger(this.getClass()).error("Connot create a card", ex);
+            LoggerFactory.getLogger(this.getClass()).error("Cannot create a card", ex);
         }
 
     }
