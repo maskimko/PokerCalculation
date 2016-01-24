@@ -27,7 +27,7 @@ static synchronized void register(Pair pair){
         int alreadyWon = wins.get(pair);
         wins.put(pair, ++alreadyWon);
     } else {
-         wins.put(pair, 0);
+         wins.put(pair, 1);
     }
     counter++;
 }

@@ -5,6 +5,7 @@
  */
 package ua.pp.msk.poker.member;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,11 @@ public class Dealer {
         showRiver(deck, deckPointer, onTable);
         Map<Hand, Player> hands = checkHands(onTable, GameStage.river);
         getWinner(hands);
-        getWinPair(onTable, hands);
+        try {
+            getWinPair(hands);
+        } catch (CardException e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Cannot get win pair", e);
+        }
     }
 
     /**
@@ -100,20 +105,10 @@ public class Dealer {
         return winner.getValue();
     }
 
-    private Pair getWinPair(Card[] onTable, Map<Hand, Player> hands) {
-        Hand hand = hands.entrySet().iterator().next().getKey();
-        List<Card> handCards = Arrays.asList(hand.getCards());
-        handCards.removeAll(Arrays.asList(onTable));
-        Pair p = null;
-        try {
-            p = new Pair(handCards.toArray(new Card[2]));
-
-            LoggerFactory.getLogger(this.getClass()).debug("Winning pair " + p);
-            Collector.getCollector().registerWinningPair(p);
-        } catch (CardException ex) {
-            LoggerFactory.getLogger(this.getClass()).error("cannot create pair", ex);
-        }
-        return p;
+    private Pair getWinPair(Map<Hand, Player> hands) throws CardException {
+        Pair pair = getWinner(hands).getPair();
+        Collector.getCollector().registerWinningPair(pair);
+        return pair;
     }
 
     /**

@@ -21,6 +21,7 @@ import ua.pp.msk.poker.rules.Combination;
 import ua.pp.msk.poker.stat.GameStage;
 import ua.pp.msk.poker.stat.PairWinStatistic;
 import ua.pp.msk.poker.stat.PlayerWinStatistic;
+import ua.pp.msk.poker.stat.StatisticPrinter;
 
 /**
  *
@@ -56,61 +57,15 @@ public class SimpleCalculator {
             startSimulation(playersNumber, gamesNumber);
             long endTime = System.currentTimeMillis();
             System.out.println(String.format("Calculations for %d players adn %d games played:", playersNumber, gamesNumber));
-            printStatistic();
+            StatisticPrinter statisticPrinter = new StatisticPrinter();
+            statisticPrinter.printStatistic();
             System.out.println(String.format("It took %d milliseconds to finish", endTime - startTime));
         } catch (ParseException ex) {
             LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot parse arguments", ex);
         }
     }
 
-    private static void printStatistic() {
-        System.out.println("\nStatistics:");
-        System.out.println("Combinations analyzed: " + HandStatistic.getRegistrationsCount());
-        printGameStageStatistic(GameStage.preflop, HandStatistic.getPreFlopStatistic());
-        printGameStageStatistic(GameStage.flop, HandStatistic.getFlopStatistic());
-        printGameStageStatistic(GameStage.turn, HandStatistic.getTurnStatistic());
-        printGameStageStatistic(GameStage.river, HandStatistic.getRiverStatistic());
-        
-        System.out.println("\n\nWinners statistics:");
-        Map<Player, Integer> winners = PlayerWinStatistic.getWinners();
-        printWinnersStatistic(winners);
-        System.out.println("\n\nWinning pair statistics:");
-        Map<Pair, Integer> winPairs = PairWinStatistic.getWinPairs();
-        printPairStatistic(winPairs);
-    }
-
-    private static void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats) {
-        System.out.println("\n\n---------------------" + stage.getName() + " Statistic---------------------");
-        System.out.println(String.format("%15s\t%10s %10s %10s", "Combination", "Occurences", stage.getName() + " %", "Total %"));
-        System.out.println("---------------------------------------------------------");
-        for (Map.Entry<Combination, Integer> entry : stats.entrySet()) {
-            System.out.println(String.format("%15s\t%10s %9.3f%% %9.5f%%", entry.getKey().name(), entry.getValue(),
-                    ((double) entry.getValue()) * 100 / HandStatistic.getGameStageAnalyzedCombinationsCount(stage),
-                    ((double) entry.getValue()) * 100 / HandStatistic.getRegistrationsCount()));
-        }
-    }
-
-    private static void printWinnersStatistic(Map<Player, Integer> winners){
-        System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
-        System.out.println(String.format("%-15s %-5s  %-5s", "Player", "Times", "%"));
-        System.out.println("------------------------------------");
-        Iterator<Map.Entry<Player, Integer>> iterator = winners.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<Player, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey().getName(), next.getValue(), ((double)next.getValue())*100/PlayerWinStatistic.getGamesCount()));
-        }
-    }
-    
-     private static void printPairStatistic(Map<Pair, Integer> winPairs){
-        System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
-        System.out.println(String.format("%-15s %-5s  %-5s", "Pair", "Times", "%"));
-        System.out.println("------------------------------------");
-        Iterator<Map.Entry<Pair, Integer>> iterator = winPairs.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry<Pair, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey(), next.getValue(), ((double)next.getValue())*100/PlayerWinStatistic.getGamesCount()));
-        }
-    }
+   
     
     private static void startSimulation(int players, int games) {
         Simulator simulator = new Simulator(games, players, true);

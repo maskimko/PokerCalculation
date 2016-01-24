@@ -6,6 +6,8 @@
 package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 import ua.pp.msk.poker.stat.HandStatistic;
 import ua.pp.msk.poker.deck.Card;
@@ -92,7 +94,7 @@ public class Player {
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
                             getName(), hand.toString(), Arrays.toString(pair), Arrays.toString(cards)));
-            Collector.getCollector().registerHand(Combination.HIGHHAND, stage);
+            Collector.getCollector().registerHand(hand.getCombination(), stage);
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }
@@ -138,6 +140,18 @@ public class Player {
         return true;
     }
 
-    
+    /**
+     * Show cards. For in package use only!
+     * @return Pair of received cards.
+     */
+    Pair getPair(){
+       Pair p = null;
+        try {
+            p =  new Pair(pair);
+        } catch (CardException ex) {
+          LoggerFactory.getLogger(this.getClass()).error("Cannot create a pair of cards for player " + name, ex);
+        }
+        return p;
+    }
     
 }
