@@ -27,8 +27,16 @@ public class Pair {
         if (cards.length > 2) throw new ExtraCardException("Cannot set more than 2 cards to Pair object");
         //TODO NullPointerException
         if ( cards[0] == null || cards[1] == null) throw new BadCardException("Cards cannot be null value");
+        if (cards[0] == cards[1] || cards[0].equals(cards[1])) throw new BadCardException("Cards cannot be equal or same");
         first = cards[0];
         second = cards[1];
+    }
+    
+    public Pair(Card c1, Card c2) throws BadCardException{
+         if ( c1 == null || c2 == null) throw new BadCardException("Cards cannot be null value");
+        if (c1 == c2 || c1.equals(c2)) throw new BadCardException("Cards cannot be equal or same");
+        first = c1;
+        second = c2;
     }
     
     public Card[] getCards(){

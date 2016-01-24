@@ -5,9 +5,6 @@
  */
 package ua.pp.msk.poker;
 
-import java.util.Iterator;
-import ua.pp.msk.poker.stat.HandStatistic;
-import java.util.Map;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -15,12 +12,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.deck.Pair;
-import ua.pp.msk.poker.member.Player;
-import ua.pp.msk.poker.rules.Combination;
-import ua.pp.msk.poker.stat.GameStage;
-import ua.pp.msk.poker.stat.PairWinStatistic;
-import ua.pp.msk.poker.stat.PlayerWinStatistic;
 import ua.pp.msk.poker.stat.StatisticPrinter;
 
 /**

@@ -3,12 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ua.pp.msk.poker.stat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import org.slf4j.LoggerFactory;
+import ua.pp.msk.poker.deck.Card;
+import ua.pp.msk.poker.deck.Deck;
+import ua.pp.msk.poker.deck.Deck52s;
 import ua.pp.msk.poker.deck.Pair;
+import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.member.Player;
 import ua.pp.msk.poker.rules.Combination;
 
@@ -17,23 +27,25 @@ import ua.pp.msk.poker.rules.Combination;
  * @author Maksym Shkolnyi aka maskimko
  */
 public class StatisticPrinter {
- public   void printStatistic() {
+
+    public void printStatistic() {
         System.out.println("\nStatistics:");
         System.out.println("Combinations analyzed: " + HandStatistic.getRegistrationsCount());
         printGameStageStatistic(GameStage.preflop, HandStatistic.getPreFlopStatistic());
         printGameStageStatistic(GameStage.flop, HandStatistic.getFlopStatistic());
         printGameStageStatistic(GameStage.turn, HandStatistic.getTurnStatistic());
         printGameStageStatistic(GameStage.river, HandStatistic.getRiverStatistic());
-        
+
         System.out.println("\n\nWinners statistics:");
         Map<Player, Integer> winners = PlayerWinStatistic.getWinners();
         printWinnersStatistic(winners);
         System.out.println("\n\nWinning pair statistics:");
         Map<Pair, Integer> winPairs = PairWinStatistic.getWinPairs();
         printPairStatistic(winPairs);
+        printPairTableStatistic(winPairs);
     }
 
-    private  void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats) {
+    private void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats) {
         System.out.println("\n\n---------------------" + stage.getName() + " Statistic---------------------");
         System.out.println(String.format("%15s\t%10s %10s %10s", "Combination", "Occurences", stage.getName() + " %", "Total %"));
         System.out.println("---------------------------------------------------------");
@@ -44,25 +56,56 @@ public class StatisticPrinter {
         }
     }
 
-    private void printWinnersStatistic(Map<Player, Integer> winners){
+    private void printWinnersStatistic(Map<Player, Integer> winners) {
         System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
         System.out.println(String.format("%-15s %-5s  %-5s", "Player", "Times", "%"));
         System.out.println("------------------------------------");
         Iterator<Map.Entry<Player, Integer>> iterator = winners.entrySet().iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<Player, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey().getName(), next.getValue(), ((double)next.getValue())*100/PlayerWinStatistic.getGamesCount()));
+            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey().getName(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount()));
         }
     }
-    
-     private  void printPairStatistic(Map<Pair, Integer> winPairs){
+
+    private void printPairStatistic(Map<Pair, Integer> winPairs) {
         System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
         System.out.println(String.format("%-15s %-5s  %-5s", "Pair", "Times", "%"));
         System.out.println("------------------------------------");
-        Iterator<Map.Entry<Pair, Integer>> iterator = winPairs.entrySet().iterator();
-        while (iterator.hasNext()){
+        List<Map.Entry<Pair, Integer>> sorted = new ArrayList<>();
+        sorted.addAll(winPairs.entrySet());
+        Collections.sort(sorted, (Map.Entry<Pair, Integer> t, Map.Entry<Pair, Integer> u) -> -1 * t.getValue().compareTo(u.getValue()));
+        Iterator<Map.Entry<Pair, Integer>> iterator = sorted.iterator();
+        while (iterator.hasNext()) {
             Map.Entry<Pair, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey(), next.getValue(), ((double)next.getValue())*100/PlayerWinStatistic.getGamesCount()));
+            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount()));
+        }
+    }
+
+    private void printPairTableStatistic(Map<Pair, Integer> winPairs) {
+        try {
+            Card[] cards = new Deck52s().getCards();
+            System.out.print("     ");
+            for (int i = 0; i < cards.length; i++) {
+                System.out.printf(" %3s ", cards[i]);
+            }
+            for (int i = 0; i < cards.length; i++) {
+                System.out.printf("\n %3s ", cards[i]);
+                for (int j = 0; j < cards.length; j++) {
+                    if (i == j) {
+                        System.out.printf(" %3d ", 0);
+                        continue;
+                    }
+                    Pair pair = new Pair(cards[i], cards[j]);
+                    if (winPairs.containsKey(pair)) {
+                        System.out.printf(" %3d ", winPairs.get(pair));
+                    } else {
+                        System.out.printf(" %3d ", 0);
+                    }
+                }
+            }
+            System.out.println();
+        } catch (CardException ex) {
+            LoggerFactory.getLogger(this.getClass()).warn("Cannot create table of card pairs", ex);
         }
     }
 }
