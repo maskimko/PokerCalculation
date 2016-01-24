@@ -25,18 +25,18 @@ public class Pair {
         if (cards == null)  throw new BadCardException("Cannot initialize pair class with null value array");
         if (cards.length < 2) throw new MissingCardException("Cannot set less than 2 cards to Pair object");
         if (cards.length > 2) throw new ExtraCardException("Cannot set more than 2 cards to Pair object");
-        //TODO NullPointerException
         if ( cards[0] == null || cards[1] == null) throw new BadCardException("Cards cannot be null value");
         if (cards[0] == cards[1] || cards[0].equals(cards[1])) throw new BadCardException("Cards cannot be equal or same");
-        first = cards[0];
-        second = cards[1];
+        
+        first = cards[0].compareTo(cards[1]) > 0 ?  cards[0] : cards[1];
+        second = cards[1] != first ? cards[1] : cards[0];
     }
     
     public Pair(Card c1, Card c2) throws BadCardException{
          if ( c1 == null || c2 == null) throw new BadCardException("Cards cannot be null value");
         if (c1 == c2 || c1.equals(c2)) throw new BadCardException("Cards cannot be equal or same");
-        first = c1;
-        second = c2;
+        first = c1.compareTo(c2) > 0 ? c1 : c2;
+        second = c2 != first ? c2 : c1;
     }
     
     public Card[] getCards(){
@@ -60,18 +60,16 @@ public class Pair {
             return false;
         }
         final Pair other = (Pair) obj;
-        Card[] our = new Card[]{first,second};
-        Arrays.sort(our);
-        Card[] their = new Card[]{other.first, other.second};
-        Arrays.sort(their);
-        if (!Objects.equals(our[0], their[0])) {
+        if (!Objects.equals(this.first, other.first)) {
             return false;
         }
-        if (!Objects.equals(our[1], their[1])) {
+        if (!Objects.equals(this.second, other.second)) {
             return false;
         }
         return true;
     }
+
+  
 
     @Override
     public String toString() {
