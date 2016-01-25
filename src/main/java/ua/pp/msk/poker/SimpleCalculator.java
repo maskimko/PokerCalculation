@@ -5,6 +5,8 @@
  */
 package ua.pp.msk.poker;
 
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -23,10 +25,14 @@ public class SimpleCalculator {
     public static void main(String[] args) {
         int playersNumber = 5;
         int gamesNumber = 10;
+        PrintStream ps = null;
+        int threadsNumber = -1;
         Options cliOpts = new Options();
         cliOpts.addOption("p", "players", true, "Number of players (between 2 and 10)");
         cliOpts.addOption("g", "games", true, "Number of games");
         cliOpts.addOption("h", false, "Get help");
+        cliOpts.addOption("o", "outputfile", true, "File to redirect output. Default is standard out");
+        cliOpts.addOption("t", "threads", true, "Number of threads to use");
         CommandLineParser clp = new DefaultParser();
         try {
             CommandLine cl = clp.parse(cliOpts, args);
@@ -43,23 +49,40 @@ public class SimpleCalculator {
                 String optionValue = cl.getOptionValue("p");
                 playersNumber = Integer.parseInt(optionValue);
             }
-
+            if (cl.hasOption("o")){
+                String outputFile = cl.getOptionValue("o");
+                ps = new PrintStream(outputFile);
+            } else {
+                ps = System.out;
+            }
+            if (cl.hasOption("t")){
+                threadsNumber = Integer.parseInt(cl.getOptionValue("t"));
+            } 
             long startTime = System.currentTimeMillis();
-            startSimulation(playersNumber, gamesNumber);
+            startSimulation(playersNumber, gamesNumber, threadsNumber);
             long endTime = System.currentTimeMillis();
             System.out.println(String.format("Calculations for %d players adn %d games played:", playersNumber, gamesNumber));
-            StatisticPrinter statisticPrinter = new StatisticPrinter();
+            StatisticPrinter statisticPrinter =  new StatisticPrinter(ps);
             statisticPrinter.printStatistic();
             System.out.println(String.format("It took %d milliseconds to finish", endTime - startTime));
         } catch (ParseException ex) {
             LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot parse arguments", ex);
+        } catch (FileNotFoundException ex) {
+           LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot find output file ", ex);
         }
     }
 
    
     
-    private static void startSimulation(int players, int games) {
-        Simulator simulator = new Simulator(games, players, true);
-        simulator.run();
+    private static void startSimulation(int players, int games, int threads) {
+        try {
+            //        Simulator simulator = new Simulator(games, players, true);
+//        simulator.run();
+            SimulatorManager sm = new SimulatorManager(players, games, true, threads);
+            sm.start();
+        } catch (InterruptedException ex) {
+            LoggerFactory.getLogger(SimpleCalculator.class).error("Calculation has been interrupted", ex);
+            System.exit(3);
+        }
     }
 }

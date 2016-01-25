@@ -5,6 +5,7 @@
  */
 package ua.pp.msk.poker.stat;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,18 +25,28 @@ import ua.pp.msk.poker.rules.Combination;
  */
 public class StatisticPrinter {
 
+    private PrintStream ps;
+    
+    public StatisticPrinter() {
+        ps = System.out;
+    }
+
+    public StatisticPrinter(PrintStream out){
+        ps = out;
+    }
+    
     public void printStatistic() {
-        System.out.println("\nStatistics:");
-        System.out.println("Combinations analyzed: " + HandStatistic.getRegistrationsCount());
+        ps.println("\nStatistics:");
+        ps.println("Combinations analyzed: " + HandStatistic.getRegistrationsCount());
         printGameStageStatistic(GameStage.preflop, HandStatistic.getPreFlopStatistic());
         printGameStageStatistic(GameStage.flop, HandStatistic.getFlopStatistic());
         printGameStageStatistic(GameStage.turn, HandStatistic.getTurnStatistic());
         printGameStageStatistic(GameStage.river, HandStatistic.getRiverStatistic());
 
-        System.out.println("\n\nWinners statistics:");
+        ps.println("\n\nWinners statistics:");
         Map<Player, Integer> winners = PlayerWinStatistic.getWinners();
         printWinnersStatistic(winners);
-        System.out.println("\n\nWinning pair statistics:");
+        ps.println("\n\nWinning pair statistics:");
         Map<Pair, Integer> winPairs = PairWinStatistic.getWinPairs();
         printPairStatistic(winPairs);
         printPairTableStatistic(winPairs);
@@ -43,31 +54,31 @@ public class StatisticPrinter {
     }
 
     private void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats) {
-        System.out.println("\n\n---------------------" + stage.getName() + " Statistic---------------------");
-        System.out.println(String.format("%15s\t%10s %10s %10s", "Combination", "Occurences", stage.getName() + " %", "Total %"));
-        System.out.println("---------------------------------------------------------");
+        ps.println("\n\n---------------------" + stage.getName() + " Statistic---------------------");
+        ps.println(String.format("%15s\t%10s %10s %10s", "Combination", "Occurences", stage.getName() + " %", "Total %"));
+        ps.println("---------------------------------------------------------");
         for (Map.Entry<Combination, Integer> entry : stats.entrySet()) {
-            System.out.println(String.format("%15s\t%10s %9.3f%% %9.5f%%", entry.getKey().name(), entry.getValue(),
+            ps.println(String.format("%15s\t%10s %9.3f%% %9.5f%%", entry.getKey().name(), entry.getValue(),
                     ((double) entry.getValue()) * 100 / HandStatistic.getGameStageAnalyzedCombinationsCount(stage),
                     ((double) entry.getValue()) * 100 / HandStatistic.getRegistrationsCount()));
         }
     }
 
     private void printWinnersStatistic(Map<Player, Integer> winners) {
-        System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
-        System.out.println(String.format("%-15s %-5s  %-5s", "Player", "Times", "%"));
-        System.out.println("------------------------------------");
+        ps.println("Games played: " + PlayerWinStatistic.getGamesCount());
+        ps.println(String.format("%-15s %-5s  %-5s", "Player", "Times", "%"));
+        ps.println("------------------------------------");
         Iterator<Map.Entry<Player, Integer>> iterator = winners.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Player, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey().getName(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount()));
+            ps.println(String.format("%15s  %5d %5.2f%%", next.getKey().getName(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount()));
         }
     }
 
     private void printPairStatistic(Map<Pair, Integer> winPairs) {
-        System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
-        System.out.println(String.format("%-15s        %-5s  %-5s     %-6s", "Pair", "Times", "%", "Relative %"));
-        System.out.println("------------------------------------");
+        ps.println("Games played: " + PlayerWinStatistic.getGamesCount());
+        ps.println(String.format("%-15s      %-5s      %-5s %-6s", "Pair", "Times", "%", "Relative %"));
+        ps.println("------------------------------------");
         List<Map.Entry<Pair, Integer>> sorted = new ArrayList<>();
         sorted.addAll(winPairs.entrySet());
         Collections.sort(sorted, (Map.Entry<Pair, Integer> t, Map.Entry<Pair, Integer> u) -> -1 * t.getValue().compareTo(u.getValue()));
@@ -75,33 +86,33 @@ public class StatisticPrinter {
         Iterator<Map.Entry<Pair, Integer>> iterator = sorted.iterator();
         while (iterator.hasNext()) {
             Map.Entry<Pair, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%     %5.2f%%", next.getKey(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount(), ((double) next.getValue()) * 100 / best));
+            ps.println(String.format("%15s  %5d %5.2f%%     %5.2f%%", next.getKey(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount(), ((double) next.getValue()) * 100 / best));
         }
     }
 
     private void printPairTableStatistic(Map<Pair, Integer> winPairs) {
         try {
             Card[] cards = new Deck52s().getCards();
-            System.out.print("      ");
+            ps.print("      ");
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf(" %3s  ", cards[i]);
+                ps.printf(" %3s  ", cards[i]);
             }
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf("\n %3s  ", cards[i]);
+                ps.printf("\n %3s  ", cards[i]);
                 for (int j = 0; j < cards.length; j++) {
                     if (i == j) {
-                        System.out.printf(" %4d ", 0);
+                        ps.printf(" %4d ", 0);
                         continue;
                     }
                     Pair pair = new Pair(cards[i], cards[j]);
                     if (winPairs.containsKey(pair)) {
-                        System.out.printf(" %4d ", winPairs.get(pair));
+                        ps.printf(" %4d ", winPairs.get(pair));
                     } else {
-                        System.out.printf(" %4d ", 0);
+                        ps.printf(" %4d ", 0);
                     }
                 }
             }
-            System.out.println();
+            ps.println();
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Cannot create table of card pairs", ex);
         }
@@ -116,26 +127,26 @@ public class StatisticPrinter {
                 if (current > best) best = current;
             }
             Card[] cards = new Deck52s().getCards();
-            System.out.print("          ");
+            ps.print("          ");
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf("   %3s  ", cards[i]);
+                ps.printf("   %3s  ", cards[i]);
             }
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf("\n   %3s  ", cards[i]);
+                ps.printf("\n   %3s  ", cards[i]);
                 for (int j = 0; j < cards.length; j++) {
                     if (i == j) {
-                        System.out.printf(" %6.2f%%", 0f);
+                        ps.printf(" %6.2f%%", 0f);
                         continue;
                     }
                     Pair pair = new Pair(cards[i], cards[j]);
                     if (winPairs.containsKey(pair)) {
-                        System.out.printf(" %6.2f%%", ((double)winPairs.get(pair)) * 100 / best);
+                        ps.printf(" %6.2f%%", ((double)winPairs.get(pair)) * 100 / best);
                     } else {
-                        System.out.printf(" %6.2f%%", 0f);
+                        ps.printf(" %6.2f%%", 0f);
                     }
                 }
             }
-            System.out.println();
+            ps.println();
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Cannot create table of card pairs", ex);
         }
