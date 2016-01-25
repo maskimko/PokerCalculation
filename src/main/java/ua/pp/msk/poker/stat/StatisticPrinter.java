@@ -7,15 +7,11 @@ package ua.pp.msk.poker.stat;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import org.slf4j.LoggerFactory;
 import ua.pp.msk.poker.deck.Card;
-import ua.pp.msk.poker.deck.Deck;
 import ua.pp.msk.poker.deck.Deck52s;
 import ua.pp.msk.poker.deck.Pair;
 import ua.pp.msk.poker.exceptions.CardException;
@@ -43,6 +39,7 @@ public class StatisticPrinter {
         Map<Pair, Integer> winPairs = PairWinStatistic.getWinPairs();
         printPairStatistic(winPairs);
         printPairTableStatistic(winPairs);
+        printPairTablePercentStatistic(winPairs);
     }
 
     private void printGameStageStatistic(GameStage stage, Map<Combination, Integer> stats) {
@@ -69,37 +66,72 @@ public class StatisticPrinter {
 
     private void printPairStatistic(Map<Pair, Integer> winPairs) {
         System.out.println("Games played: " + PlayerWinStatistic.getGamesCount());
-        System.out.println(String.format("%-15s %-5s  %-5s", "Pair", "Times", "%"));
+        System.out.println(String.format("%-15s        %-5s  %-5s     %-6s", "Pair", "Times", "%", "Relative %"));
         System.out.println("------------------------------------");
         List<Map.Entry<Pair, Integer>> sorted = new ArrayList<>();
         sorted.addAll(winPairs.entrySet());
         Collections.sort(sorted, (Map.Entry<Pair, Integer> t, Map.Entry<Pair, Integer> u) -> -1 * t.getValue().compareTo(u.getValue()));
+        int best = sorted.get(0).getValue();
         Iterator<Map.Entry<Pair, Integer>> iterator = sorted.iterator();
         while (iterator.hasNext()) {
             Map.Entry<Pair, Integer> next = iterator.next();
-            System.out.println(String.format("%15s  %5d %5.2f%%", next.getKey(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount()));
+            System.out.println(String.format("%15s  %5d %5.2f%%     %5.2f%%", next.getKey(), next.getValue(), ((double) next.getValue()) * 100 / PlayerWinStatistic.getGamesCount(), ((double) next.getValue()) * 100 / best));
         }
     }
 
     private void printPairTableStatistic(Map<Pair, Integer> winPairs) {
         try {
             Card[] cards = new Deck52s().getCards();
-            System.out.print("     ");
+            System.out.print("      ");
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf(" %3s ", cards[i]);
+                System.out.printf(" %3s  ", cards[i]);
             }
             for (int i = 0; i < cards.length; i++) {
-                System.out.printf("\n %3s ", cards[i]);
+                System.out.printf("\n %3s  ", cards[i]);
                 for (int j = 0; j < cards.length; j++) {
                     if (i == j) {
-                        System.out.printf(" %3d ", 0);
+                        System.out.printf(" %4d ", 0);
                         continue;
                     }
                     Pair pair = new Pair(cards[i], cards[j]);
                     if (winPairs.containsKey(pair)) {
-                        System.out.printf(" %3d ", winPairs.get(pair));
+                        System.out.printf(" %4d ", winPairs.get(pair));
                     } else {
-                        System.out.printf(" %3d ", 0);
+                        System.out.printf(" %4d ", 0);
+                    }
+                }
+            }
+            System.out.println();
+        } catch (CardException ex) {
+            LoggerFactory.getLogger(this.getClass()).warn("Cannot create table of card pairs", ex);
+        }
+    }
+    
+    private void printPairTablePercentStatistic(Map<Pair, Integer> winPairs) {
+        try {
+            int best = 0;
+            Iterator<Map.Entry<Pair, Integer>> wpi = winPairs.entrySet().iterator();
+            while (wpi.hasNext()){
+                int current = wpi.next().getValue();
+                if (current > best) best = current;
+            }
+            Card[] cards = new Deck52s().getCards();
+            System.out.print("          ");
+            for (int i = 0; i < cards.length; i++) {
+                System.out.printf("   %3s  ", cards[i]);
+            }
+            for (int i = 0; i < cards.length; i++) {
+                System.out.printf("\n   %3s  ", cards[i]);
+                for (int j = 0; j < cards.length; j++) {
+                    if (i == j) {
+                        System.out.printf(" %6.2f%%", 0f);
+                        continue;
+                    }
+                    Pair pair = new Pair(cards[i], cards[j]);
+                    if (winPairs.containsKey(pair)) {
+                        System.out.printf(" %6.2f%%", ((double)winPairs.get(pair)) * 100 / best);
+                    } else {
+                        System.out.printf(" %6.2f%%", 0f);
                     }
                 }
             }
