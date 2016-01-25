@@ -14,7 +14,7 @@ import ua.pp.msk.poker.rules.Hand;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public interface HandStrength {
+public interface HandStrength extends KnowledgeConsts{
 
     public float estimate(Pair pair);
     public float estimate(Hand hand, Card[] onTable);

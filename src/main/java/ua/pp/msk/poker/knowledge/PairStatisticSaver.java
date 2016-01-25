@@ -12,12 +12,7 @@ import ua.pp.msk.poker.deck.Pair;
  *
  * @author maskimko
  */
-public interface PairStatisticSaver {
-    public static final String SUIT="suit";
-    public static final String VALUE="value";
-    public static final String PAIR="pair";
-    public static final String STRENGTH="strength";
-    public static final String CARD="card";
-    public static final String PAIRS="pairs";
+public interface PairStatisticSaver extends KnowledgeConsts{
+    
     public void save(Map<Pair, Integer> strength);
 }
