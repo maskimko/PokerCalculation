@@ -5,3 +5,5 @@ poker.log
 .nb-gradle-properties
 .nb-gradle-properties
 .gradle/*
+private
+
