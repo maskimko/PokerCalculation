@@ -57,7 +57,6 @@ public class SimpleHandStrength implements HandStrength {
 
     public SimpleHandStrength(InputStream is) throws SAXException, ParserConfigurationException, IOException, CardException {
         this.sm = new HashMap<>();
-
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = dbf.newDocumentBuilder();
         Document doc = builder.parse(is);
@@ -91,7 +90,7 @@ public class SimpleHandStrength implements HandStrength {
                 }
                 if (strengthNodes.item(0).getNodeType() == Node.ELEMENT_NODE) {
                     Element strength = (Element) strengthNodes.item(0);
-                    s = Float.parseFloat(strength.getNodeValue());
+                    s = Float.parseFloat(strength.getFirstChild().getNodeValue());
                 }
                 Pair p = new Pair(cards);
                 sm.put(p, s);
@@ -103,7 +102,7 @@ public class SimpleHandStrength implements HandStrength {
     public float estimate(Pair pair    ) {
         float strength = 0.1f;
         if (sm.containsKey(pair)) {
-            sm.get(pair);
+            strength = sm.get(pair);
         }
         return strength;
     }

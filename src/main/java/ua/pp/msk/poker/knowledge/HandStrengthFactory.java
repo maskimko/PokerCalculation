@@ -25,7 +25,7 @@ public class HandStrengthFactory {
     
     private static HandStrengthFactory hsf = null;
     
-    public HandStrengthFactory getHandStrengthFactory(){
+    public static HandStrengthFactory getHandStrengthFactory(){
         if (hsf == null) {
             synchronized(HandStrengthFactory.class){
                 if (hsf == null) {
