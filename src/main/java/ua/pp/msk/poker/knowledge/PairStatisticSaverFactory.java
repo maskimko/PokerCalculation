@@ -16,7 +16,20 @@ import java.io.OutputStream;
  */
 public class PairStatisticSaverFactory {
 
-    public PairStatisticSaverFactory() {
+    private static PairStatisticSaverFactory pssf = null;
+    
+    public static PairStatisticSaverFactory getPairStatisticSaverFactory(){
+        if (pssf ==  null){
+            synchronized(PairStatisticSaverFactory.class){
+                if (pssf == null) {
+                    pssf = new PairStatisticSaverFactory();
+                }
+            }
+        }
+        return pssf;
+    }
+    
+    private PairStatisticSaverFactory() {
     }
 
     public PairStatisticSaver getXmlInstance(File statsFile) throws IOException{

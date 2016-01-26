@@ -23,8 +23,20 @@ import ua.pp.msk.poker.exceptions.PokerException;
  */
 public class HandStrengthFactory {
     
+    private static HandStrengthFactory hsf = null;
     
-    public HandStrengthFactory(){    }
+    public HandStrengthFactory getHandStrengthFactory(){
+        if (hsf == null) {
+            synchronized(HandStrengthFactory.class){
+                if (hsf == null) {
+                    hsf = new HandStrengthFactory();
+                }
+            }
+        }
+        return hsf;
+    }
+    
+    private HandStrengthFactory(){    }
     
     public HandStrength build(File handStats) throws PokerException{
         HandStrength hs = null;

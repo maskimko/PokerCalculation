@@ -12,7 +12,7 @@ import ua.pp.msk.poker.deck.Pair;
  *
  * @author maskimko
  */
-public interface PairStatisticSaver extends KnowledgeConsts{
+public interface PairStatisticSaver extends KnowledgeConsts, AutoCloseable{
     
     public void save(Map<Pair, Integer> strength);
 }

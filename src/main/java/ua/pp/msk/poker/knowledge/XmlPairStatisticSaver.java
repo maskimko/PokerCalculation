@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Pair;
 
@@ -34,7 +35,7 @@ import ua.pp.msk.poker.deck.Pair;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class XmlPairStatisticSaver implements PairStatisticSaver, AutoCloseable {
+public class XmlPairStatisticSaver implements PairStatisticSaver {
 
     private OutputStream os = null;
 
@@ -83,7 +84,8 @@ public class XmlPairStatisticSaver implements PairStatisticSaver, AutoCloseable 
                 card2.setAttribute(SUIT, second.getSuit().name());
                 card2.setAttribute(VALUE, second.getValue().name());
                 Element strength = doc.createElement(STRENGTH);
-                strength.setNodeValue("" + ((float) times) * 100 / max);
+                Text strVal = doc.createTextNode("" + ((float) times) * 100 / max);
+                strength.appendChild(strVal);
                 pair.appendChild(card1);
                 pair.appendChild(card2);
                 pair.appendChild(strength);
