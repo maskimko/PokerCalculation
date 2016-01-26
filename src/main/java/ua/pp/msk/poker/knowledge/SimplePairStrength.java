@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,6 +27,7 @@ import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
 import ua.pp.msk.poker.exceptions.MissingCardException;
 import ua.pp.msk.poker.rules.Hand;
+import ua.pp.msk.poker.stat.GameStage;
 
 /**
  *
@@ -95,8 +94,8 @@ public class SimplePairStrength implements HandStrength {
                 }
                 Pair p = new Pair(cards);
                 sm.put(p, s);
-            } 
-            if (item.getNodeType() == Node.ELEMENT_NODE && item.getNodeName().equals(DEFAULTSTRENGTH)){
+            }
+            if (item.getNodeType() == Node.ELEMENT_NODE && item.getNodeName().equals(DEFAULTSTRENGTH)) {
                 Element ds = (Element) item;
                 String defStrVal = ds.getFirstChild().getNodeValue();
                 defStr = Float.parseFloat(defStrVal);
@@ -104,8 +103,8 @@ public class SimplePairStrength implements HandStrength {
         }
     }
 
-    public float estimate(Pair pair    ) {
-        float strength =defStr;
+    public float estimate(Pair pair) {
+        float strength = defStr;
         if (sm.containsKey(pair)) {
             strength = sm.get(pair);
         }
@@ -113,26 +112,41 @@ public class SimplePairStrength implements HandStrength {
     }
 
     @Override
-    public float estimate(Hand hand ) {
-        Card[] cards = hand.getCards();
-        Card[] pairCards = new Card[2];
-        int i = 0;
-        for (Card c: cards) {
-            if (c != null ){
-                if ( i < pairCards.length) pairCards[i++] = c;
-                else i++;
+    public float strength(Hand hand, GameStage gs) {
+        if (gs == GameStage.preflop) {
+            Card[] cards = hand.getCards();
+            Card[] pairCards = new Card[2];
+            int i = 0;
+            for (Card c : cards) {
+                if (c != null) {
+                    if (i < pairCards.length) {
+                        pairCards[i++] = c;
+                    } else {
+                        i++;
+                    }
+                }
             }
-        }
-        if (i == 2) {
-            float estimation = defStr;
-            try {
-               estimation=  estimate(new Pair(pairCards));
-            } catch (CardException ex) {
-                LoggerFactory.getLogger(this.getClass()).warn("Only pairs estimation is supported in this class. You got the wrong result");
+            if (i == 2) {
+                float estimation = defStr;
+                try {
+                    estimation = estimate(new Pair(pairCards));
+                } catch (CardException ex) {
+                    LoggerFactory.getLogger(this.getClass()).warn("Only pairs estimation is supported in this class. You got the wrong result");
+                }
+                return estimation;
             }
-            return estimation;
         }
         return defStr;
+    }
+
+    @Override
+    public float estimate(Hand hand, GameStage gs) {
+        throw new UnsupportedOperationException("Not supported yet");
+    }
+
+    @Override
+    public float chance(Hand hand, GameStage gs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

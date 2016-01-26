@@ -16,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import ua.pp.msk.poker.deck.Pair;
 import ua.pp.msk.poker.exceptions.PokerException;
+import ua.pp.msk.poker.rules.Hand;
+import ua.pp.msk.poker.stat.GameStage;
 
 /**
  *
@@ -59,8 +61,8 @@ public class HandStrengthFactory {
         return hs;
     }
     
-    public HandStrength build(Map<Pair, Integer> strengthMap){
-        HandStrength hs = new SimplePairStrength(strengthMap);
+    public HandStrength build(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed){
+        HandStrength hs = new SimpleHandStrength(wins, gamesPlayed);
         return hs;
     }
     

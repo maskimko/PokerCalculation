@@ -30,6 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Pair;
+import ua.pp.msk.poker.rules.Hand;
+import ua.pp.msk.poker.stat.GameStage;
 
 /**
  *
@@ -118,6 +120,16 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
     @Override
     public void save(Map<Pair, Integer> strength) {
         save(strength, 0.01f);
+    }
+
+    @Override
+    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed, float defStrength) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
