@@ -52,7 +52,7 @@ public class HandStrengthFactory {
     public HandStrength build(InputStream is) throws PokerException{
         HandStrength hs = null;
         try {
-             hs = new SimpleHandStrength(is);
+             hs = new SimplePairStrength(is);
         } catch (SAXException | ParserConfigurationException | IOException ex) {
             throw new PokerException("Internal error", ex);
         } 
@@ -60,7 +60,7 @@ public class HandStrengthFactory {
     }
     
     public HandStrength build(Map<Pair, Integer> strengthMap){
-        HandStrength hs = new SimpleHandStrength(strengthMap);
+        HandStrength hs = new SimplePairStrength(strengthMap);
         return hs;
     }
     

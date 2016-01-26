@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -32,12 +34,12 @@ import ua.pp.msk.poker.rules.Hand;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class SimpleHandStrength implements HandStrength {
+public class SimplePairStrength implements HandStrength {
 
     private final Map<Pair, Float> sm;
     private float defStr = 0.01f;
 
-    SimpleHandStrength(Map<Pair, Integer> strengthMap) {
+    SimplePairStrength(Map<Pair, Integer> strengthMap) {
         int max = 0;
         this.sm = new HashMap<>();
         Iterator<Map.Entry<Pair, Integer>> iterator = strengthMap.entrySet().iterator();
@@ -55,7 +57,7 @@ public class SimpleHandStrength implements HandStrength {
         }
     }
 
-    public SimpleHandStrength(InputStream is) throws SAXException, ParserConfigurationException, IOException, CardException {
+    public SimplePairStrength(InputStream is) throws SAXException, ParserConfigurationException, IOException, CardException {
         this.sm = new HashMap<>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = dbf.newDocumentBuilder();
@@ -102,7 +104,6 @@ public class SimpleHandStrength implements HandStrength {
         }
     }
 
-    @Override
     public float estimate(Pair pair    ) {
         float strength =defStr;
         if (sm.containsKey(pair)) {
@@ -112,8 +113,25 @@ public class SimpleHandStrength implements HandStrength {
     }
 
     @Override
-    public float estimate(Hand hand, Card[] onTable
-    ) {
+    public float estimate(Hand hand ) {
+        Card[] cards = hand.getCards();
+        Card[] pairCards = new Card[2];
+        int i = 0;
+        for (Card c: cards) {
+            if (c != null ){
+                if ( i < pairCards.length) pairCards[i++] = c;
+                else i++;
+            }
+        }
+        if (i == 2) {
+            float estimation = defStr;
+            try {
+               estimation=  estimate(new Pair(pairCards));
+            } catch (CardException ex) {
+                LoggerFactory.getLogger(this.getClass()).warn("Only pairs estimation is supported in this class. You got the wrong result");
+            }
+            return estimation;
+        }
         return defStr;
     }
 

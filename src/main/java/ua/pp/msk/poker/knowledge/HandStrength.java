@@ -6,8 +6,6 @@
 
 package ua.pp.msk.poker.knowledge;
 
-import ua.pp.msk.poker.deck.Card;
-import ua.pp.msk.poker.deck.Pair;
 import ua.pp.msk.poker.rules.Hand;
 
 /**
@@ -16,6 +14,5 @@ import ua.pp.msk.poker.rules.Hand;
  */
 public interface HandStrength extends KnowledgeConsts{
 
-    public float estimate(Pair pair);
-    public float estimate(Hand hand, Card[] onTable);
+    public float estimate(Hand hand);
 }

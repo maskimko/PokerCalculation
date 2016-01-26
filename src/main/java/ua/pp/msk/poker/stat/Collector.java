@@ -16,8 +16,6 @@ import ua.pp.msk.poker.rules.Combination;
 public class Collector {
 
     private static Collector c = null;
-    private final HandWinStatistic handWinStatistic;
-    private final PairWinStatistic pairWinStatistic;
 
     public static Collector getCollector() {
         if (c == null) {
@@ -31,8 +29,6 @@ public class Collector {
     }
 
     private Collector() {
-        handWinStatistic = new HandWinStatistic();
-        pairWinStatistic = new PairWinStatistic();
     }
     
     public void registerHand(Combination combination, GameStage stage){
@@ -43,8 +39,13 @@ public class Collector {
         PlayerWinStatistic.registerWinner(p);
     }
 
+    @Deprecated
     public void registerWinningPair(Pair p){
         PairWinStatistic.register(p);
+    }
+    
+    public void registerWinningHands(Player.History history){
+        HandWinStatistic.register(history);
     }
     
 }

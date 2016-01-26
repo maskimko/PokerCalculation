@@ -6,17 +6,15 @@
 package ua.pp.msk.poker.member;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.stat.HandStatistic;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Pair;
 import ua.pp.msk.poker.exceptions.CardException;
 import ua.pp.msk.poker.exceptions.ExtraCardException;
 import ua.pp.msk.poker.exceptions.FullTableException;
 import ua.pp.msk.poker.exceptions.MissingCardException;
-import ua.pp.msk.poker.rules.Combination;
 import ua.pp.msk.poker.rules.Hand;
 import ua.pp.msk.poker.rules.HandChecker;
 import ua.pp.msk.poker.rules.SimpleHandChecker;
@@ -33,10 +31,14 @@ public class Player {
     private String name;
     private Card[] pair = new Card[2];
     private Hand hand = null;
+    private History history = null;
+    private boolean canShowHistory = false;
+    
 
     public Player(int id, String name) {
         this.id = id;
         this.name = name;
+        this.history = new History();
     }
 
     Player(int id) {
@@ -98,6 +100,8 @@ public class Player {
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }
+        history.addHand(stage, hand);
+        if (stage == GameStage.river) canShowHistory = true;
         return hand;
     }
 
@@ -144,6 +148,7 @@ public class Player {
      * Show cards. For in package use only!
      * @return Pair of received cards.
      */
+    @Deprecated
     Pair getPair(){
        Pair p = null;
         try {
@@ -153,5 +158,28 @@ public class Player {
         }
         return p;
     }
+    /**
+     * This method should return history of hands after the river come only.
+     * @return History of hands
+     */
+    History getHistory(){
+        if (canShowHistory) return history;
+        return null;
+    }
+    
+    public static class History{
+    private final Map<GameStage, Hand> hands;
+    private History(){
+        hands = new HashMap<>();
+    }
+    
+    private void addHand(GameStage gs, Hand h){
+        hands.put(gs, h);
+    }
+    
+    public Map<GameStage, Hand> getHands(){
+        return hands;
+    }
+}
     
 }

@@ -5,10 +5,8 @@
  */
 package ua.pp.msk.poker.member;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.slf4j.LoggerFactory;
@@ -28,7 +26,7 @@ import ua.pp.msk.poker.stat.GameStage;
  */
 public class Dealer {
 
-    private Table table;
+    private final Table table;
 
     public Dealer(Table table) {
         this.table = table;
@@ -51,12 +49,14 @@ public class Dealer {
         checkHands(onTable, GameStage.turn);
         showRiver(deck, deckPointer, onTable);
         Map<Hand, Player> hands = checkHands(onTable, GameStage.river);
-        getWinner(hands);
-        try {
-            getWinPair(hands);
-        } catch (CardException e) {
-            LoggerFactory.getLogger(this.getClass()).warn("Cannot get win pair", e);
-        }
+        Player winner = getWinner(hands);
+        Collector.getCollector().registerWinningHands(winner.getHistory());
+        //We will try to register all hands together.
+//        try {
+//            getWinPair(hands);
+//        } catch (CardException e) {
+//            LoggerFactory.getLogger(this.getClass()).warn("Cannot get win pair", e);
+//        }
     }
 
     /**
@@ -105,6 +105,7 @@ public class Dealer {
         return winner.getValue();
     }
 
+    @Deprecated
     private Pair getWinPair(Map<Hand, Player> hands) throws CardException {
         Pair pair = getWinner(hands).getPair();
         Collector.getCollector().registerWinningPair(pair);
