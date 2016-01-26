@@ -8,12 +8,9 @@ package ua.pp.msk.poker.knowledge;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -32,7 +29,7 @@ import ua.pp.msk.poker.exceptions.PokerException;
 public class XmlPairStatisticSaveRestoreTest {
 
     private static Map<Pair, Integer> strengthMap;
-    private static String filePath = "/tmp/stat_test.xml";
+    private static final String filePath = "/tmp/stat_test.xml";
 
     public XmlPairStatisticSaveRestoreTest() {
     }
@@ -60,7 +57,7 @@ public class XmlPairStatisticSaveRestoreTest {
         PairStatisticSaver instance = null;
         try {
             instance = pairStatisticSaverFactory.getXmlInstance(filePath);
-            instance.save(strengthMap);
+            instance.save(strengthMap, 20f);
         } catch (IOException ex) {
             LoggerFactory.getLogger(this.getClass()).error("Cannot save statistic to the file during the test", ex);
         } finally {
@@ -77,6 +74,7 @@ public class XmlPairStatisticSaveRestoreTest {
 
     @Test
     public void testRestore() {
+          System.out.println("restore from saved xml");
         HandStrengthFactory handStrengthFactory = HandStrengthFactory.getHandStrengthFactory();
         try {
             HandStrength hs = handStrengthFactory.build(new File(filePath));
@@ -84,8 +82,11 @@ public class XmlPairStatisticSaveRestoreTest {
             assertTrue(Math.abs(100f - pstr) < 0.1f);
              pstr = hs.estimate(new Pair(new Card(Suit.DIAMONS, SuitSet.SIX), new Card(Suit.DIAMONS, SuitSet.SEVEN)));
             assertTrue(Math.abs(83.3f - pstr) < 0.1f);
+            pstr = hs.estimate(new Pair(new Card(Suit.CLUBS, SuitSet.TWO), new Card(Suit.DIAMONS, SuitSet.ACE)));
+            assertTrue(Math.abs(20f - pstr) < 0.1f);
         } catch (PokerException ex) {
             LoggerFactory.getLogger(this.getClass()).error("Cannot build HandStrength during the test", ex);
         }
     }
+    
 }

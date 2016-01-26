@@ -15,4 +15,10 @@ import ua.pp.msk.poker.deck.Pair;
 public interface PairStatisticSaver extends KnowledgeConsts, AutoCloseable{
     
     public void save(Map<Pair, Integer> strength);
+    /**
+     * 
+     * @param strength
+     * @param defStrength default hand strength in percents. Should be between 0 and 100
+     */ 
+    public void save(Map<Pair, Integer> strength, float defStrength);
 }

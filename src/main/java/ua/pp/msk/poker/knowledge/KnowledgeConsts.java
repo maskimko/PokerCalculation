@@ -16,4 +16,5 @@ public interface KnowledgeConsts {
     public static final String STRENGTH="strength";
     public static final String CARD="card";
     public static final String PAIRS="pairs";
+    public static final String DEFAULTSTRENGTH = "defaultstrength";
 }

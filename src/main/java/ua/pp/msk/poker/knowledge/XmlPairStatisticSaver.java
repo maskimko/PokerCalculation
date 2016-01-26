@@ -52,7 +52,7 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
     }
     
     @Override
-    public void save(Map<Pair, Integer> strengthMap) {
+    public void save(Map<Pair, Integer> strengthMap, float defStr) {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = dbf.newDocumentBuilder();
@@ -61,11 +61,6 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
             Element pairs = doc.createElement(PAIRS);
             doc.appendChild(pairs);
             int max = 0;
-//            for (Map.Entry<Pair, Integer> pair: strength.entrySet()){
-//                int times = pair.getValue();
-//                if (times > max) max = times;
-//            }
-            //let's use lambda here.
             max = strengthMap.entrySet().stream()
                     .max((Map.Entry<Pair, Integer> one, Map.Entry<Pair, Integer> another) -> one.getValue()
                             .compareTo(another.getValue())).get().getValue();
@@ -91,7 +86,9 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
                 pair.appendChild(strength);
                 pairs.appendChild(pair);
             }
-
+            Element dstr = doc.createElement(DEFAULTSTRENGTH);
+            dstr.appendChild(doc.createTextNode(""+defStr));
+            pairs.appendChild(dstr);
             DOMSource ds = new DOMSource(doc);
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -116,6 +113,11 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
     public void close() throws Exception {
         os.flush();
         os.close();
+    }
+
+    @Override
+    public void save(Map<Pair, Integer> strength) {
+        save(strength, 0.01f);
     }
 
 }

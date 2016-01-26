@@ -35,6 +35,7 @@ import ua.pp.msk.poker.rules.Hand;
 public class SimpleHandStrength implements HandStrength {
 
     private final Map<Pair, Float> sm;
+    private float defStr = 0.01f;
 
     SimpleHandStrength(Map<Pair, Integer> strengthMap) {
         int max = 0;
@@ -48,9 +49,8 @@ public class SimpleHandStrength implements HandStrength {
         }
         iterator = strengthMap.entrySet().iterator();
         while (iterator.hasNext()) {
-            float s = 0.01f;
             Map.Entry<Pair, Integer> e = iterator.next();
-            s = (float) e.getValue() * 100 / max;
+            float s = (float) e.getValue() * 100 / max;
             sm.put(e.getKey(), s);
         }
     }
@@ -61,11 +61,10 @@ public class SimpleHandStrength implements HandStrength {
         DocumentBuilder builder = dbf.newDocumentBuilder();
         Document doc = builder.parse(is);
         doc.getDocumentElement().normalize();
-        LoggerFactory.getLogger(this.getClass()).debug("Root element: " + doc.getDocumentElement().getTagName());
         NodeList pairElements = doc.getDocumentElement().getChildNodes();
         for (int t = 0; t < pairElements.getLength(); t++) {
             Node item = pairElements.item(t);
-            if (item.getNodeType() == Node.ELEMENT_NODE) {
+            if (item.getNodeType() == Node.ELEMENT_NODE && item.getNodeName().equals(PAIR)) {
                 Element pair = (Element) item;
                 float s = 0.01f;
                 Card[] cards = new Card[2];
@@ -94,13 +93,18 @@ public class SimpleHandStrength implements HandStrength {
                 }
                 Pair p = new Pair(cards);
                 sm.put(p, s);
+            } 
+            if (item.getNodeType() == Node.ELEMENT_NODE && item.getNodeName().equals(DEFAULTSTRENGTH)){
+                Element ds = (Element) item;
+                String defStrVal = ds.getFirstChild().getNodeValue();
+                defStr = Float.parseFloat(defStrVal);
             }
         }
     }
 
     @Override
     public float estimate(Pair pair    ) {
-        float strength = 0.1f;
+        float strength =defStr;
         if (sm.containsKey(pair)) {
             strength = sm.get(pair);
         }
@@ -110,7 +114,7 @@ public class SimpleHandStrength implements HandStrength {
     @Override
     public float estimate(Hand hand, Card[] onTable
     ) {
-        return 0.1f;
+        return defStr;
     }
 
 }
