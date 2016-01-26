@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Suit;
 import ua.pp.msk.poker.deck.SuitSet;
+import ua.pp.msk.poker.exceptions.CardException;
 
 /**
  *
@@ -95,4 +96,25 @@ public class HandTest {
 
     }
 
+    @Test
+    public void testClone() throws Exception {
+        System.out.println("Test of clone method");
+
+        try {
+            Hand h = new Hand();
+            h.setCombination(Combination.TWOPAIRS);
+            h.setCards(new Card[]{new Card(Suit.CLUBS, SuitSet.JACK), new Card(Suit.HEARTS, SuitSet.JACK),
+                new Card(Suit.DIAMONS, SuitSet.SEVEN), new Card(Suit.SPADES, SuitSet.TEN),
+                new Card(Suit.HEARTS, SuitSet.TEN)});
+            Hand cloned = (Hand) h.clone();
+            assertFalse(cloned == h);
+            for (int i = 0; i < 5; i++) {
+                assertFalse(h.getCards()[i] == cloned.getCards()[i]);
+                assertTrue(h.getCards()[i].equals(cloned.getCards()[i]));
+            }
+            assertTrue(h.getCombination() == cloned.getCombination());
+        } catch (CardException ex) {
+            throw new Exception(ex);
+        }
+    }
 }

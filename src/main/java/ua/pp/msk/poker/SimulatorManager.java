@@ -60,7 +60,7 @@ public class SimulatorManager {
             fixedThreadPool.submit(simulator);
         }
         fixedThreadPool.shutdown();
-        fixedThreadPool.awaitTermination(1, TimeUnit.DAYS);
+        fixedThreadPool.awaitTermination(10, TimeUnit.DAYS);
     }
 
 }

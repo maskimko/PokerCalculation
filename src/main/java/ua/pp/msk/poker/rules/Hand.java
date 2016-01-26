@@ -16,7 +16,7 @@ import ua.pp.msk.poker.exceptions.MissingCardException;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class Hand implements Comparable<Hand> {
+public class Hand implements Comparable<Hand>, Cloneable {
 
     private Combination combination;
     private Card[] cards;
@@ -105,7 +105,9 @@ public class Hand implements Comparable<Hand> {
                     sn++;
                 }
             }
-            if (n != sn) return false;
+            if (n != sn) {
+                return false;
+            }
         }
         return true;
     }
@@ -135,6 +137,23 @@ public class Hand implements Comparable<Hand> {
             }
         }
         return 0;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Hand cloned = null;
+        try {
+            cloned = new Hand();
+            Card[] clonedCards = new Card[cards.length];
+            for (int i = 0; i < cards.length; i++) {
+                clonedCards[i] = (Card) cards[i].clone();
+            }
+            cloned.setCards(clonedCards);
+            cloned.setCombination(combination);
+        } catch (CardException ex) {
+            throw new CloneNotSupportedException("Cannot clone Hand beacause of " + ex.getMessage());
+        }
+        return cloned;
     }
 
 }

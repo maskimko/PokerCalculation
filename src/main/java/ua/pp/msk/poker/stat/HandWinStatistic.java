@@ -15,8 +15,19 @@ import ua.pp.msk.poker.rules.Hand;
  * @author Maksym Shkolnyi aka maskimko
  */
 public class HandWinStatistic {
-private static Map<Hand, Integer> wins = new HashMap<>();
-public static Map<Hand, Integer> getWinHands(){
-    return wins;
+private static final Map<Hand, Integer> flopWins = new HashMap<>();
+private static final Map<Hand, Integer> turnWins = new HashMap<>();
+private static final Map<Hand, Integer> riverWins = new HashMap<>();
+
+public static Map<Hand, Integer> getFlopWinHands(){
+    return flopWins;
 }
+
+public static Map<Hand, Integer> getTurnWinHands(){
+    return turnWins;
+}
+public static Map<Hand, Integer> getRiverWinHands(){
+    return riverWins;
+}
+
 }

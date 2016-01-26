@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class Card implements Comparable<Card>{
+public class Card implements Comparable<Card>, Cloneable{
 private final Suit suit;
 private final SuitSet value;
 private boolean visible = true;
@@ -87,6 +87,12 @@ public Card (Suit suit, SuitSet value){
                 return 0;
             }
         }
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Card cloned = new Card(suit, value);
+        return cloned;
     }
     
     

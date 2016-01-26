@@ -91,5 +91,16 @@ public class CardTest {
         assertEquals(expResult2, result2);
         assertEquals(expResult3, result3);
     }
+    
+    @Test
+    public void testClone() throws CloneNotSupportedException{
+        System.out.println("Test of clone method");
+        Card c1 = new Card(Suit.CLUBS, SuitSet.TWO);
+        Card c2 = (Card) c1.clone();
+        assertFalse(c1 == c2);
+        assertTrue(c1.getValue() == c2.getValue());
+        assertTrue(c1.getSuit() == c2.getSuit());
+        assertTrue(c1.equals(c2));
+    }
 
 }
