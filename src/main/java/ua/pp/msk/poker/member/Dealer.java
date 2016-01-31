@@ -50,6 +50,7 @@ public class Dealer {
         showRiver(deck, deckPointer, onTable);
         Map<Hand, Player> hands = checkHands(onTable, GameStage.river);
         Player winner = getWinner(hands);
+        Collector.getCollector().registerWinningPair(winner.getPair());
         for (Player p : players){
             Collector.getCollector().registerHandHistory(p.getHistory(), p.equals(winner));
         }

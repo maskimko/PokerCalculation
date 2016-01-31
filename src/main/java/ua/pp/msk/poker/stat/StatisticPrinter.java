@@ -75,6 +75,7 @@ public class StatisticPrinter {
         }
     }
 
+    @Deprecated
     private void printPairStatistic(Map<Pair, Integer> winPairs) {
         ps.println("Games played: " + PlayerWinStatistic.getGamesCount());
         ps.println(String.format("%-15s      %-5s      %-5s %-6s", "Pair", "Times", "%", "Relative %"));

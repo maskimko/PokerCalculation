@@ -7,6 +7,7 @@
 package ua.pp.msk.poker.knowledge;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -18,7 +19,7 @@ public class HandStatisticSaverFactory {
 
     private static HandStatisticSaverFactory pssf = null;
     
-    public static HandStatisticSaverFactory getPairStatisticSaverFactory(){
+    public static HandStatisticSaverFactory getHandStatisticSaverFactory(){
         if (pssf ==  null){
             synchronized(HandStatisticSaverFactory.class){
                 if (pssf == null) {
@@ -33,8 +34,8 @@ public class HandStatisticSaverFactory {
     }
 
     public HandStatisticSaver getXmlInstance(File statsFile) throws IOException{
-        XmlPairStatisticSaver xmlPairStatisticSaver = new XmlPairStatisticSaver(statsFile);
-        return xmlPairStatisticSaver;
+        FileOutputStream fos = new FileOutputStream(statsFile);
+        return getXmlInstance(fos);
         
     }
     
@@ -44,7 +45,7 @@ public class HandStatisticSaverFactory {
     } 
     
      public HandStatisticSaver getXmlInstance(OutputStream os){
-        XmlPairStatisticSaver xmlPairStatisticSaver = new XmlPairStatisticSaver(os);
+        HandStatisticSaver xmlPairStatisticSaver = new XmlHandStatisticSaver(os);
         return xmlPairStatisticSaver;
     } 
     

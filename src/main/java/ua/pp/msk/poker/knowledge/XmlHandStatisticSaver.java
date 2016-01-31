@@ -8,7 +8,6 @@ package ua.pp.msk.poker.knowledge;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,8 +28,6 @@ import ua.pp.msk.poker.deck.Card;
 import ua.pp.msk.poker.deck.Pair;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.CARD;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.DEFAULTSTRENGTH;
-import static ua.pp.msk.poker.knowledge.KnowledgeConsts.PAIR;
-import static ua.pp.msk.poker.knowledge.KnowledgeConsts.PAIRS;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.STRENGTH;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.SUIT;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.VALUE;
@@ -45,9 +42,15 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
 
     private OutputStream os;
 
-    public XmlHandStatisticSaver() {
+    XmlHandStatisticSaver() {
         os = System.out;
     }
+
+    XmlHandStatisticSaver(OutputStream os) {
+        this.os = os;
+    }
+    
+    
 
     @Override
     public void save(Map<Pair, Integer> strength) {
@@ -73,12 +76,12 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
                 stats.appendChild(gameStage);
 
                 Element hands = doc.createElement(HANDS);
-                stats.appendChild(hands);
+                gameStage.appendChild(hands);
                 int max
                         = mhi.entrySet().stream()
                         .max((one, another) -> one.getValue()
                                 .compareTo(another.getValue())).get().getValue();
-
+                LoggerFactory.getLogger(this.getClass()).debug(String.format("At %s the most successful hand won %d times", gs.getName(), max));
                 mhi.forEach((h, times) -> {
 
                     Element hand = doc.createElement(HAND);
@@ -90,17 +93,20 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
                             hand.appendChild(card);
                         }
                     }
-
+                    Element combination = doc.createElement(COMBINATION);
+                    Text cmb = doc.createTextNode(h.getCombination().name());
+                    combination.appendChild(cmb);
+                    hand.appendChild(combination);
                     Element strength = doc.createElement(STRENGTH);
                     Text strVal = doc.createTextNode(String.format("%7.4f", ((float) times) * 100 / max));
                     strength.appendChild(strVal);
                     hand.appendChild(strength);
                     Element chance = doc.createElement(CHANCE);
-                    Text chanVal = doc.createTextNode(String.format("%7.4f" + ((float) times) * 100 / gamesPlayed));
+                    Text chanVal = doc.createTextNode(String.format("%7.4f" ,((float) times) * 100 / gamesPlayed));
                     chance.appendChild(chanVal);
                     hand.appendChild(chance);
                     Element estimation = doc.createElement(ESTIMATION);
-                    Integer loseTimes = loses.get(gs).get(h);
+                    int loseTimes = (loses.get(gs).get(h) == null) ? 0 : loses.get(gs).get(h);
                     Text estiVal = doc.createTextNode(String.format("%7.4f", (loseTimes > 0) ? ((float) times) * 100 / loseTimes : 100f));
                     estimation.appendChild(estiVal);
                     hand.appendChild(estimation);

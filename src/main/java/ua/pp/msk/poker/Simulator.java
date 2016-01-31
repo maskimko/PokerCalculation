@@ -42,9 +42,8 @@ public class Simulator implements Runnable {
     public void run() {
         try {
             for (int g = 0; g < gamesNumber; g++) {
-                if (progress && g % 100 == 0) {
-                    System.out.print(".");
-                    System.out.flush();
+                if (progress && g > 0 && g % 1000 == 0) {
+                    System.out.print((g % 1000000 == 0) ? "+":".");
                 }
                 Table table = new Table(playersNumber);
                 for (int i = 0; i < playersNumber; i++) {

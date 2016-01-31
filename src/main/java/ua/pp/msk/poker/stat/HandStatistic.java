@@ -19,7 +19,8 @@ public class HandStatistic {
     private static final Map<GameStage, Map<Hand, Integer>> wins = new HashMap<>(), 
             loses = new HashMap<>();
     
-    private static int games = 0;
+    private static int handsCount = 0, games = 0;
+    
 
     static {
         for (GameStage gs : GameStage.values()) {
@@ -46,11 +47,19 @@ public class HandStatistic {
                 stageReg.put(h, 1);
             }
         });
+        handsCount++;
+    }
+
+    static synchronized void addGame(){
         games++;
+    }
+    
+    public static int getGamesPlayed() {
+        return games;
     }
 
     
-    public static int getPlayedGames(){
-        return games;
+    public static int getHandsCount(){
+        return handsCount;
     }
 }

@@ -37,6 +37,7 @@ import ua.pp.msk.poker.stat.GameStage;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
+@Deprecated
 public class XmlPairStatisticSaver implements HandStatisticSaver {
 
     private OutputStream os = null;

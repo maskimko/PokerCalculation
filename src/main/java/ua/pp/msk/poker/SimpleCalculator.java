@@ -8,8 +8,6 @@ package ua.pp.msk.poker;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -19,6 +17,7 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.LoggerFactory;
 import ua.pp.msk.poker.knowledge.HandStatisticSaver;
 import ua.pp.msk.poker.knowledge.HandStatisticSaverFactory;
+import ua.pp.msk.poker.stat.HandStatistic;
 import ua.pp.msk.poker.stat.PairWinStatistic;
 import ua.pp.msk.poker.stat.StatisticPrinter;
 
@@ -39,7 +38,7 @@ public class SimpleCalculator {
         cliOpts.addOption("h", false, "Get help");
         cliOpts.addOption("o", "outputfile", true, "File to redirect output. Default is standard out");
         cliOpts.addOption("t", "threads", true, "Number of threads to use");
-        cliOpts.addOption("xmlhandstrength", true, "Save hand strength to xml file");
+        cliOpts.addOption("X","xmlhandstrength", true, "Save hand strength to xml file");
         CommandLineParser clp = new DefaultParser();
         try {
             CommandLine cl = clp.parse(cliOpts, args);
@@ -73,11 +72,11 @@ public class SimpleCalculator {
             StatisticPrinter statisticPrinter =  new StatisticPrinter(ps);
             statisticPrinter.printStatistic();
             System.out.println(String.format("It took %d milliseconds to finish", endTime - startTime));
-            if (cl.hasOption("xmlhandstrength")){
+            if (cl.hasOption("X")){
                
                 try {
-                    HandStatisticSaver xmlSaver = HandStatisticSaverFactory.getPairStatisticSaverFactory().getXmlInstance(cl.getOptionValue("xmlhandstrength"));
-                    xmlSaver.save(PairWinStatistic.getWinPairs(), 10f);
+                    HandStatisticSaver xmlSaver = HandStatisticSaverFactory.getHandStatisticSaverFactory().getXmlInstance(cl.getOptionValue("X"));
+                    xmlSaver.save(HandStatistic.getWinHands(), HandStatistic.getLoseHands(), HandStatistic.getGamesPlayed(), 10f);
                 } catch (IOException ex) {
                     LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot save hadn strength statistic", ex);
                 }

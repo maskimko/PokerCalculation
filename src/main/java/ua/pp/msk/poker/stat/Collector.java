@@ -37,6 +37,7 @@ public class Collector {
     
     public void registerWinner(Player p){
         PlayerWinStatistic.registerWinner(p);
+        HandStatistic.addGame();
     }
 
     @Deprecated
@@ -47,5 +48,6 @@ public class Collector {
     public void registerHandHistory(Player.History history, boolean isWinner){
         HandStatistic.register(history, isWinner);
     }
+    
     
 }
