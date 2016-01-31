@@ -31,8 +31,8 @@ public class Collector {
     private Collector() {
     }
     
-    public void registerHand(Combination combination, GameStage stage){
-            HandStatistic.registerOccurance(combination, stage);
+    public void registerCombination(Combination combination, GameStage stage){
+            CombinationStatistic.registerOccurance(combination, stage);
     }
     
     public void registerWinner(Player p){
@@ -44,8 +44,8 @@ public class Collector {
         PairWinStatistic.register(p);
     }
     
-    public void registerWinningHands(Player.History history){
-        HandWinStatistic.register(history);
+    public void registerHandHistory(Player.History history, boolean isWinner){
+        HandStatistic.register(history, isWinner);
     }
     
 }

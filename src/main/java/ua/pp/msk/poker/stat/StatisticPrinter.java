@@ -37,11 +37,11 @@ public class StatisticPrinter {
     
     public void printStatistic() {
         ps.println("\nStatistics:");
-        ps.println("Combinations analyzed: " + HandStatistic.getRegistrationsCount());
-        printGameStageStatistic(GameStage.preflop, HandStatistic.getPreFlopStatistic());
-        printGameStageStatistic(GameStage.flop, HandStatistic.getFlopStatistic());
-        printGameStageStatistic(GameStage.turn, HandStatistic.getTurnStatistic());
-        printGameStageStatistic(GameStage.river, HandStatistic.getRiverStatistic());
+        ps.println("Combinations analyzed: " + CombinationStatistic.getRegistrationsCount());
+        printGameStageStatistic(GameStage.preflop, CombinationStatistic.getPreFlopStatistic());
+        printGameStageStatistic(GameStage.flop, CombinationStatistic.getFlopStatistic());
+        printGameStageStatistic(GameStage.turn, CombinationStatistic.getTurnStatistic());
+        printGameStageStatistic(GameStage.river, CombinationStatistic.getRiverStatistic());
 
         ps.println("\n\nWinners statistics:");
         Map<Player, Integer> winners = PlayerWinStatistic.getWinners();
@@ -59,8 +59,8 @@ public class StatisticPrinter {
         ps.println("---------------------------------------------------------");
         for (Map.Entry<Combination, Integer> entry : stats.entrySet()) {
             ps.println(String.format("%15s\t%10s %9.3f%% %9.5f%%", entry.getKey().name(), entry.getValue(),
-                    ((double) entry.getValue()) * 100 / HandStatistic.getGameStageAnalyzedCombinationsCount(stage),
-                    ((double) entry.getValue()) * 100 / HandStatistic.getRegistrationsCount()));
+                    ((double) entry.getValue()) * 100 / CombinationStatistic.getGameStageAnalyzedCombinationsCount(stage),
+                    ((double) entry.getValue()) * 100 / CombinationStatistic.getRegistrationsCount()));
         }
     }
 

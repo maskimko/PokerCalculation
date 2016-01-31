@@ -50,7 +50,10 @@ public class Dealer {
         showRiver(deck, deckPointer, onTable);
         Map<Hand, Player> hands = checkHands(onTable, GameStage.river);
         Player winner = getWinner(hands);
-        Collector.getCollector().registerWinningHands(winner.getHistory());
+        for (Player p : players){
+            Collector.getCollector().registerHandHistory(p.getHistory(), p.equals(winner));
+        }
+        //TODO delete the comment below
         //We will try to register all hands together.
 //        try {
 //            getWinPair(hands);

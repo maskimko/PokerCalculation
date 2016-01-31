@@ -96,7 +96,7 @@ public class Player {
             LoggerFactory.getLogger(this.getClass()).debug(
                     String.format("Player \"%s\" Got a combination %s having cards: %s\tTable: %s",
                             getName(), hand.toString(), Arrays.toString(pair), Arrays.toString(cards)));
-            Collector.getCollector().registerHand(hand.getCombination(), stage);
+            Collector.getCollector().registerCombination(hand.getCombination(), stage);
         } catch (CardException ex) {
             LoggerFactory.getLogger(this.getClass()).warn("Wrong cards amount ", ex);
         }

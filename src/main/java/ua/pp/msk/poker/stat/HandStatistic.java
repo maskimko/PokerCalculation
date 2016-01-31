@@ -7,7 +7,8 @@ package ua.pp.msk.poker.stat;
 
 import java.util.HashMap;
 import java.util.Map;
-import ua.pp.msk.poker.rules.Combination;
+import ua.pp.msk.poker.member.Player;
+import ua.pp.msk.poker.rules.Hand;
 
 /**
  *
@@ -15,79 +16,41 @@ import ua.pp.msk.poker.rules.Combination;
  */
 public class HandStatistic {
 
-    private static final Map<Combination, Integer> preFlopStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> flopStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> turnStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> riverStatistic = new HashMap<>();
-    private static final Map<GameStage, Integer> stageOccurences = new HashMap<>();
-    private static long counter = 0;
+    private static final Map<GameStage, Map<Hand, Integer>> wins = new HashMap<>(), 
+            loses = new HashMap<>();
+    
+    private static int games = 0;
 
     static {
-        for (Combination c : Combination.values()) {
-            preFlopStatistic.put(c, 0);
-            flopStatistic.put(c, 0);
-            turnStatistic.put(c, 0);
-            riverStatistic.put(c, 0);
-        }
         for (GameStage gs : GameStage.values()) {
-            stageOccurences.put(gs, 0);
+            wins.put(gs, new HashMap<>());
+            loses.put(gs, new HashMap<>());
         }
     }
 
-     static synchronized void registerOccurance(Combination combination, GameStage stage) {
-        if (stage.equals(GameStage.preflop)) {
-            int current = preFlopStatistic.get(combination);
-            preFlopStatistic.put(combination, ++current);
-        }
-        if (stage.equals(GameStage.flop)) {
-            int current = flopStatistic.get(combination);
-            flopStatistic.put(combination, ++current);
-        }
-        if (stage.equals(GameStage.turn)) {
-            int current = turnStatistic.get(combination);
-            turnStatistic.put(combination, ++current);
-        }
-        if (stage.equals(GameStage.river)) {
-            int current = riverStatistic.get(combination);
-            riverStatistic.put(combination, ++current);
-        }
-        incrementStageOccurance(stage);
-        counter++;
+    public static Map<GameStage, Map<Hand, Integer>> getWinHands() {
+        return wins;
+    }
+    public static Map<GameStage, Map<Hand, Integer>> getLoseHands() {
+        return loses;
     }
 
-    public static Map<Combination, Integer> getPreFlopStatistic() {
-        return preFlopStatistic;
-    }
-
-    public static Map<Combination, Integer> getFlopStatistic() {
-        return flopStatistic;
-    }
-
-    public static Map<Combination, Integer> getTurnStatistic() {
-        return turnStatistic;
-    }
-
-    public static Map<Combination, Integer> getRiverStatistic() {
-        return riverStatistic;
-    }
-
-    public static long getRegistrationsCount() {
-        return counter;
+    static synchronized void register(Player.History history, boolean isWinner) {
+        Map<GameStage, Hand> hands = history.getHands();
+        hands.forEach((gs, h) -> {
+            Map<Hand, Integer> stageReg = isWinner ? wins.get(gs) : loses.get(gs);
+            if (stageReg.containsKey(h)) {
+                int current = stageReg.get(h);
+                stageReg.put(h, ++current);
+            } else {
+                stageReg.put(h, 1);
+            }
+        });
+        games++;
     }
 
     
-
-
-    private static void incrementStageOccurance(GameStage gs) {
-        int times = stageOccurences.get(gs);
-        stageOccurences.put(gs, ++times);
-    }
-    /**
-     * 
-     * @param gs
-     * @return Returns how much combinations of given GameStage where analyzed 
-     */
-    public static int getGameStageAnalyzedCombinationsCount(GameStage gs){
-        return stageOccurences.get(gs);
+    public static int getPlayedGames(){
+        return games;
     }
 }
