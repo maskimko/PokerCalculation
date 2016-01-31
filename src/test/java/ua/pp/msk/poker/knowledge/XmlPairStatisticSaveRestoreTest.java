@@ -53,8 +53,8 @@ public class XmlPairStatisticSaveRestoreTest {
     @Test
     public void testSave() {
         System.out.println("save as xml");
-        PairStatisticSaverFactory pairStatisticSaverFactory = PairStatisticSaverFactory.getPairStatisticSaverFactory();
-        PairStatisticSaver instance = null;
+        HandStatisticSaverFactory pairStatisticSaverFactory = HandStatisticSaverFactory.getPairStatisticSaverFactory();
+        HandStatisticSaver instance = null;
         try {
             instance = pairStatisticSaverFactory.getXmlInstance(filePath);
             instance.save(strengthMap, 20f);

@@ -37,7 +37,7 @@ import ua.pp.msk.poker.stat.GameStage;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class XmlPairStatisticSaver implements PairStatisticSaver {
+public class XmlPairStatisticSaver implements HandStatisticSaver {
 
     private OutputStream os = null;
 
@@ -123,12 +123,12 @@ public class XmlPairStatisticSaver implements PairStatisticSaver {
     }
 
     @Override
-    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed, float defStrength) {
+    public void save(Map<GameStage, Map<Hand, Integer>> wins,Map<GameStage, Map<Hand, Integer>> loses, int gamesPlayed, float defStrength) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed) {
+    public void save(Map<GameStage, Map<Hand, Integer>> wins, Map<GameStage, Map<Hand, Integer>> loses,int gamesPlayed) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

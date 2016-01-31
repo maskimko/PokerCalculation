@@ -14,7 +14,7 @@ import ua.pp.msk.poker.stat.GameStage;
  *
  * @author maskimko
  */
-public interface PairStatisticSaver extends KnowledgeConsts, AutoCloseable{
+public interface HandStatisticSaver extends KnowledgeConsts, AutoCloseable{
     
     @Deprecated
     public void save(Map<Pair, Integer> strength);
@@ -25,7 +25,7 @@ public interface PairStatisticSaver extends KnowledgeConsts, AutoCloseable{
      */
     @Deprecated
     public void save(Map<Pair, Integer> strength, float defStrength);
-    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed, float defStrength);
-    public void save(Map<GameStage, Map<Hand, Integer>> wins, int gamesPlayed);
+    public void save(Map<GameStage, Map<Hand, Integer>> wins, Map<GameStage, Map<Hand, Integer>> loses, int gamesPlayed, float defStrength);
+    public void save(Map<GameStage, Map<Hand, Integer>> wins, Map<GameStage, Map<Hand, Integer>> loses, int gamesPlayed);
     
 }

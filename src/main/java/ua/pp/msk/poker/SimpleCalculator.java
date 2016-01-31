@@ -17,8 +17,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.LoggerFactory;
-import ua.pp.msk.poker.knowledge.PairStatisticSaver;
-import ua.pp.msk.poker.knowledge.PairStatisticSaverFactory;
+import ua.pp.msk.poker.knowledge.HandStatisticSaver;
+import ua.pp.msk.poker.knowledge.HandStatisticSaverFactory;
 import ua.pp.msk.poker.stat.PairWinStatistic;
 import ua.pp.msk.poker.stat.StatisticPrinter;
 
@@ -76,7 +76,7 @@ public class SimpleCalculator {
             if (cl.hasOption("xmlhandstrength")){
                
                 try {
-                    PairStatisticSaver xmlSaver = PairStatisticSaverFactory.getPairStatisticSaverFactory().getXmlInstance(cl.getOptionValue("xmlhandstrength"));
+                    HandStatisticSaver xmlSaver = HandStatisticSaverFactory.getPairStatisticSaverFactory().getXmlInstance(cl.getOptionValue("xmlhandstrength"));
                     xmlSaver.save(PairWinStatistic.getWinPairs(), 10f);
                 } catch (IOException ex) {
                     LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot save hadn strength statistic", ex);

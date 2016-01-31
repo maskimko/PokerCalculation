@@ -14,36 +14,36 @@ import java.io.OutputStream;
  *
  * @author Maksym Shkolnyi aka maskimko
  */
-public class PairStatisticSaverFactory {
+public class HandStatisticSaverFactory {
 
-    private static PairStatisticSaverFactory pssf = null;
+    private static HandStatisticSaverFactory pssf = null;
     
-    public static PairStatisticSaverFactory getPairStatisticSaverFactory(){
+    public static HandStatisticSaverFactory getPairStatisticSaverFactory(){
         if (pssf ==  null){
-            synchronized(PairStatisticSaverFactory.class){
+            synchronized(HandStatisticSaverFactory.class){
                 if (pssf == null) {
-                    pssf = new PairStatisticSaverFactory();
+                    pssf = new HandStatisticSaverFactory();
                 }
             }
         }
         return pssf;
     }
     
-    private PairStatisticSaverFactory() {
+    private HandStatisticSaverFactory() {
     }
 
-    public PairStatisticSaver getXmlInstance(File statsFile) throws IOException{
+    public HandStatisticSaver getXmlInstance(File statsFile) throws IOException{
         XmlPairStatisticSaver xmlPairStatisticSaver = new XmlPairStatisticSaver(statsFile);
         return xmlPairStatisticSaver;
         
     }
     
-    public PairStatisticSaver getXmlInstance(String statsFilePath) throws IOException{
+    public HandStatisticSaver getXmlInstance(String statsFilePath) throws IOException{
         File pairStatFile = new File(statsFilePath);
         return getXmlInstance(pairStatFile);
     } 
     
-     public PairStatisticSaver getXmlInstance(OutputStream os){
+     public HandStatisticSaver getXmlInstance(OutputStream os){
         XmlPairStatisticSaver xmlPairStatisticSaver = new XmlPairStatisticSaver(os);
         return xmlPairStatisticSaver;
     } 

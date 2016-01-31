@@ -17,4 +17,10 @@ public interface KnowledgeConsts {
     public static final String CARD="card";
     public static final String PAIRS="pairs";
     public static final String DEFAULTSTRENGTH = "defaultstrength";
+    public static final String HANDS="hands";
+    public static final String HAND="hand";
+    public static final String COMBINATION="combination";
+    public static final String CHANCE="chanse";
+    public static final String ESTIMATION="estimation";
+    public static final String STATISTIC="statistic";
 }
