@@ -68,17 +68,18 @@ public class SimpleCalculator {
             long startTime = System.currentTimeMillis();
             startSimulation(playersNumber, gamesNumber, threadsNumber);
             long endTime = System.currentTimeMillis();
-            System.out.println(String.format("Calculations for %d players adn %d games played:", playersNumber, gamesNumber));
+            System.out.println(String.format("Calculations for %d players and %d games played:", playersNumber, gamesNumber));
             StatisticPrinter statisticPrinter =  new StatisticPrinter(ps);
             statisticPrinter.printStatistic();
             System.out.println(String.format("It took %d milliseconds to finish", endTime - startTime));
             if (cl.hasOption("X")){
-               
-                try {
-                    HandStatisticSaver xmlSaver = HandStatisticSaverFactory.getHandStatisticSaverFactory().getXmlInstance(cl.getOptionValue("X"));
+                try ( HandStatisticSaver xmlSaver = HandStatisticSaverFactory.getHandStatisticSaverFactory().getXmlInstance(cl.getOptionValue("X"));){
+                   
                     xmlSaver.save(HandStatistic.getWinHands(), HandStatistic.getLoseHands(), HandStatistic.getGamesPlayed(), 10f);
                 } catch (IOException ex) {
-                    LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot save hadn strength statistic", ex);
+                    LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot save hand strength statistic", ex);
+                } catch (Exception ex) {
+                     LoggerFactory.getLogger(SimpleCalculator.class).error("Cannot save hand strength statistic. Probably cannot close the stream", ex);
                 }
             }
         } catch (ParseException ex) {

@@ -41,7 +41,7 @@ import ua.pp.msk.poker.stat.HandStatistic;
  */
 public class XmlHandStatisticSaver implements HandStatisticSaver {
 
-    private OutputStream os;
+    private final OutputStream os;
 
     XmlHandStatisticSaver() {
         os = System.out;

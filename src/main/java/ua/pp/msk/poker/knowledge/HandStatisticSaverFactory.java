@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.xml.stream.XMLStreamException;
 
 /**
  *
@@ -44,8 +45,12 @@ public class HandStatisticSaverFactory {
         return getXmlInstance(pairStatFile);
     } 
     
-     public HandStatisticSaver getXmlInstance(OutputStream os){
-        HandStatisticSaver xmlPairStatisticSaver = new XmlHandStatisticSaver(os);
+     public HandStatisticSaver getXmlInstance(OutputStream os) throws IOException{
+        HandStatisticSaver xmlPairStatisticSaver = null;
+        try { xmlPairStatisticSaver = new XmlHandStatisticStreamSaver(os);
+        } catch(XMLStreamException ex) {
+            throw new IOException("Cannot obtain HandStatisticSaver instance", ex);
+        }
         return xmlPairStatisticSaver;
     } 
     
