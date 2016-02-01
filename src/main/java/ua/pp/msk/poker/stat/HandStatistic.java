@@ -7,6 +7,7 @@ package ua.pp.msk.poker.stat;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import ua.pp.msk.poker.member.Player;
 import ua.pp.msk.poker.rules.Hand;
 
@@ -24,8 +25,8 @@ public class HandStatistic {
 
     static {
         for (GameStage gs : GameStage.values()) {
-            wins.put(gs, new HashMap<>());
-            loses.put(gs, new HashMap<>());
+            wins.put(gs, new ConcurrentHashMap<>());
+            loses.put(gs, new ConcurrentHashMap<>());
         }
     }
 
@@ -36,7 +37,7 @@ public class HandStatistic {
         return loses;
     }
 
-    static synchronized void register(Player.History history, boolean isWinner) {
+    static  void register(Player.History history, boolean isWinner) {
         Map<GameStage, Hand> hands = history.getHands();
         hands.forEach((gs, h) -> {
             Map<Hand, Integer> stageReg = isWinner ? wins.get(gs) : loses.get(gs);
@@ -50,7 +51,7 @@ public class HandStatistic {
         handsCount++;
     }
 
-    static synchronized void addGame(){
+    static  void addGame(){
         games++;
     }
     

@@ -40,6 +40,7 @@ public class Simulator implements Runnable {
 
     @Override
     public void run() {
+       LoggerFactory.getLogger(this.getClass()).debug("Start simulation of " + gamesNumber + " games on thread " + Thread.currentThread().getName());
         try {
             for (int g = 0; g < gamesNumber; g++) {
                 if (progress && g > 0 && g % 1000 == 0) {

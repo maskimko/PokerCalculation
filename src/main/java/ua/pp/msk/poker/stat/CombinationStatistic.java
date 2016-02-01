@@ -5,8 +5,8 @@
  */
 package ua.pp.msk.poker.stat;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import ua.pp.msk.poker.rules.Combination;
 
 /**
@@ -15,11 +15,11 @@ import ua.pp.msk.poker.rules.Combination;
  */
 public class CombinationStatistic {
 
-    private static final Map<Combination, Integer> preFlopStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> flopStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> turnStatistic = new HashMap<>();
-    private static final Map<Combination, Integer> riverStatistic = new HashMap<>();
-    private static final Map<GameStage, Integer> stageOccurences = new HashMap<>();
+    private static final Map<Combination, Integer> preFlopStatistic = new ConcurrentHashMap<>();
+    private static final Map<Combination, Integer> flopStatistic = new ConcurrentHashMap<>();
+    private static final Map<Combination, Integer> turnStatistic = new ConcurrentHashMap<>();
+    private static final Map<Combination, Integer> riverStatistic = new ConcurrentHashMap<>();
+    private static final Map<GameStage, Integer> stageOccurences = new ConcurrentHashMap<>();
     private static long counter = 0;
 
     static {
@@ -34,7 +34,7 @@ public class CombinationStatistic {
         }
     }
 
-     static synchronized void registerOccurance(Combination combination, GameStage stage) {
+     static  void registerOccurance(Combination combination, GameStage stage) {
         if (stage.equals(GameStage.preflop)) {
             int current = preFlopStatistic.get(combination);
             preFlopStatistic.put(combination, ++current);

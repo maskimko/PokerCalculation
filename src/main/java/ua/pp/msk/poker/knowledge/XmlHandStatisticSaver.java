@@ -33,6 +33,7 @@ import static ua.pp.msk.poker.knowledge.KnowledgeConsts.SUIT;
 import static ua.pp.msk.poker.knowledge.KnowledgeConsts.VALUE;
 import ua.pp.msk.poker.rules.Hand;
 import ua.pp.msk.poker.stat.GameStage;
+import ua.pp.msk.poker.stat.HandStatistic;
 
 /**
  *
@@ -49,8 +50,6 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
     XmlHandStatisticSaver(OutputStream os) {
         this.os = os;
     }
-    
-    
 
     @Override
     public void save(Map<Pair, Integer> strength) {
@@ -70,6 +69,10 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
             DOMImplementation domImplementation = docBuilder.getDOMImplementation();
             Document doc = domImplementation.createDocument(null, null, null);
             Element stats = doc.createElement(STATISTIC);
+            Element games = doc.createElement(GAMES);
+            Text gamVal = doc.createTextNode("" + HandStatistic.getGamesPlayed());
+            games.appendChild(gamVal);
+            stats.appendChild(games);
             doc.appendChild(stats);
             wins.forEach((gs, mhi) -> {
                 Element gameStage = doc.createElement(gs.name());
@@ -102,7 +105,7 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
                     strength.appendChild(strVal);
                     hand.appendChild(strength);
                     Element chance = doc.createElement(CHANCE);
-                    Text chanVal = doc.createTextNode(String.format("%7.4f" ,((float) times) * 100 / gamesPlayed));
+                    Text chanVal = doc.createTextNode(String.format("%7.4f", ((float) times) * 100 / gamesPlayed));
                     chance.appendChild(chanVal);
                     hand.appendChild(chance);
                     Element estimation = doc.createElement(ESTIMATION);
@@ -110,6 +113,15 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
                     Text estiVal = doc.createTextNode(String.format("%7.4f", (loseTimes > 0) ? ((float) times) * 100 / loseTimes : 100f));
                     estimation.appendChild(estiVal);
                     hand.appendChild(estimation);
+
+                    Element winTimes = doc.createElement(WINTIMES);
+                    Text winTimesVal = doc.createTextNode("" + times);
+                    winTimes.appendChild(winTimesVal);
+                    hand.appendChild(winTimes);
+                    Element loseTimesElement = doc.createElement(LOSETIMES);
+                    Text loseTimesVal = doc.createTextNode("" + loseTimes);
+                    loseTimesElement.appendChild(loseTimesVal);
+                    hand.appendChild(loseTimesElement);
 
                     hands.appendChild(hand);
 
@@ -139,11 +151,9 @@ public class XmlHandStatisticSaver implements HandStatisticSaver {
         }
     }
 
-
-
     @Override
     public void close() throws Exception {
-        if (os != System.out && !os.equals(System.out)){
+        if (os != System.out && !os.equals(System.out)) {
             os.close();
         }
     }

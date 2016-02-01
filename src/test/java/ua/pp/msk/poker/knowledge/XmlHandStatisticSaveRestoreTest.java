@@ -26,12 +26,12 @@ import ua.pp.msk.poker.exceptions.PokerException;
  *
  * @author maskimko
  */
-public class XmlPairStatisticSaveRestoreTest {
+public class XmlHandStatisticSaveRestoreTest {
 
     private static Map<Pair, Integer> strengthMap;
     private static final String filePath = "/tmp/stat_test.xml";
 
-    public XmlPairStatisticSaveRestoreTest() {
+    public XmlHandStatisticSaveRestoreTest() {
     }
 
     @BeforeClass
@@ -43,34 +43,34 @@ public class XmlPairStatisticSaveRestoreTest {
             strengthMap.put(new Pair(new Card(Suit.DIAMONS, SuitSet.SIX), new Card(Suit.DIAMONS, SuitSet.SEVEN)), 45);
             strengthMap.put(new Pair(new Card(Suit.HEARTS, SuitSet.EIGHT), new Card(Suit.HEARTS, SuitSet.NINE)), 54);
         } catch (BadCardException ex) {
-            LoggerFactory.getLogger(XmlPairStatisticSaveRestoreTest.class).error("Cannot create Pair of cards during the test", ex);
+            LoggerFactory.getLogger(XmlHandStatisticSaveRestoreTest.class).error("Cannot create Pair of cards during the test", ex);
         }
     }
 
-    /**
-     * Test of save method, of class XmlPairStatisticSaver.
-     */
-    @Test
-    public void testSave() {
-        System.out.println("save as xml");
-        HandStatisticSaverFactory pairStatisticSaverFactory = HandStatisticSaverFactory.getPairStatisticSaverFactory();
-        HandStatisticSaver instance = null;
-        try {
-            instance = pairStatisticSaverFactory.getXmlInstance(filePath);
-            instance.save(strengthMap, 20f);
-        } catch (IOException ex) {
-            LoggerFactory.getLogger(this.getClass()).error("Cannot save statistic to the file during the test", ex);
-        } finally {
-            if (instance != null) {
-                try {
-                    instance.close();
-                } catch (Exception ex) {
-                    LoggerFactory.getLogger(this.getClass()).error("Cannot close saver during the test", ex);
-                }
-            }
-        }
-        assertTrue(Files.exists(Paths.get(filePath)));
-    }
+//    /**
+//     * Test of save method, of class XmlPairStatisticSaver.
+//     */
+//    @Test
+//    public void testSave() {
+//        System.out.println("save as xml");
+//        HandStatisticSaverFactory pairStatisticSaverFactory = HandStatisticSaverFactory.getHandStatisticSaverFactory();
+//        HandStatisticSaver instance = null;
+//        try {
+//            instance = pairStatisticSaverFactory.getXmlInstance(filePath);
+//            instance.save(strengthMap, 20f);
+//        } catch (IOException ex) {
+//            LoggerFactory.getLogger(this.getClass()).error("Cannot save statistic to the file during the test", ex);
+//        } finally {
+//            if (instance != null) {
+//                try {
+//                    instance.close();
+//                } catch (Exception ex) {
+//                    LoggerFactory.getLogger(this.getClass()).error("Cannot close saver during the test", ex);
+//                }
+//            }
+//        }
+//        assertTrue(Files.exists(Paths.get(filePath)));
+//    }
 
 //    @Test
 //    public void testRestore() {

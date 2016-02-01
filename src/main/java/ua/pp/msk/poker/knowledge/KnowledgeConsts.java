@@ -23,4 +23,8 @@ public interface KnowledgeConsts {
     public static final String CHANCE="chanse";
     public static final String ESTIMATION="estimation";
     public static final String STATISTIC="statistic";
+    public static final String GAMES="games";
+    public static final String WINTIMES="wintimes";
+    public static final String LOSETIMES="losetimes";
+            
 }

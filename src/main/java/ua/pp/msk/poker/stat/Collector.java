@@ -31,21 +31,21 @@ public class Collector {
     private Collector() {
     }
     
-    public void registerCombination(Combination combination, GameStage stage){
+    public  void registerCombination(Combination combination, GameStage stage){
             CombinationStatistic.registerOccurance(combination, stage);
     }
     
-    public void registerWinner(Player p){
+    public  void registerWinner(Player p){
         PlayerWinStatistic.registerWinner(p);
         HandStatistic.addGame();
     }
 
     @Deprecated
-    public void registerWinningPair(Pair p){
+    public   void registerWinningPair(Pair p){
         PairWinStatistic.register(p);
     }
     
-    public void registerHandHistory(Player.History history, boolean isWinner){
+    public   void registerHandHistory(Player.History history, boolean isWinner){
         HandStatistic.register(history, isWinner);
     }
     

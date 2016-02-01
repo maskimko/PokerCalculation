@@ -6,8 +6,8 @@
 
 package ua.pp.msk.poker.stat;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import ua.pp.msk.poker.member.Player;
 
 /**
@@ -15,14 +15,14 @@ import ua.pp.msk.poker.member.Player;
  * @author Maksym Shkolnyi aka maskimko
  */
 public class PlayerWinStatistic {
-    private static Map<Player, Integer> wins = new HashMap<>();
+    private static Map<Player, Integer> wins = new ConcurrentHashMap<>();
     private static int counter = 0;
     
     public static Map<Player, Integer> getWinners(){
         return wins;
     }
     
-    static synchronized void registerWinner(Player p){
+    static  void registerWinner(Player p){
         if (wins.containsKey(p)){
             Integer count = wins.get(p);
             wins.put(p, ++count);
