@@ -6,4 +6,5 @@ poker.log
 .nb-gradle-properties
 .gradle/*
 private
+gradle
 
