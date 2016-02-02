@@ -1,7 +1,8 @@
 apply plugin: 'java'
+apply plugin: GreetingPlugin
 
 group = 'ua.pp.msk'
-version = '1.3.03'
+version = '1.3.04'
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -40,7 +41,9 @@ repositories {
     // You may define additional repositories, or even remove "mavenCentral()".
     // Read more about repositories here:
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
+
 }
+
 
 dependencies {
     // TODO: Add dependencies here ...
@@ -49,5 +52,56 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.13'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
     testCompile group: 'junit', name: 'junit', version: '4.10'
-    
+
+}
+
+greeting.message = "Hi there"
+class GreetingPlugin implements Plugin<Project> {
+  void apply(Project project){
+    project.extensions.create("greeting", GreetingPluginExtension)
+    project.task('hello') << {
+      println project.greeting.message
+    }
+  }
+}
+
+class GreetingPluginExtension {
+  def String message  = "Hello from GreetingPlugin"
+}
+
+class GreetingToFileTask extends DefaultTask {
+  def destination
+
+  File getDestination(){
+    project.file(destination)
+  }
+  @TaskAction
+  def greet(){
+    def file = getDestination()
+    file.parentFile.mkdirs()
+    file.write "Hello to file"
+  }
+}
+
+task greet(type: GreetingToFileTask){
+  destination = { project.greetingFile }
+}
+
+task sayGreeting(dependsOn: greet) << {
+  println file(greetingFile).text
+}
+
+ext.greetingFile = "$buildDir/hello.txt"
+
+//Add file to the local repository
+// mvn install:install-file -Dfile=build/libs/PokerCalculation-1.3.03.jar -DgroupId=ua.pp.msk -DartifactId=PokerCalculation -Dversion=1.3.03 -Dpackaging=jar -DlocalRepositoryPath=/tmp/lmr
+
+
+apply plugin: 'maven'
+uploadArchives {
+  repositories {
+    mavenDeployer{
+      repository(url: "file:///tmp/lmr")
+    }
+  }
 }
