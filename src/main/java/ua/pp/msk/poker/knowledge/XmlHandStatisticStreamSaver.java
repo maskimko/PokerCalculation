@@ -40,9 +40,9 @@ public class XmlHandStatisticStreamSaver implements HandStatisticSaver {
 
     private final  XMLStreamWriter w;
     
+    
      XmlHandStatisticStreamSaver() throws XMLStreamException {
-          XMLOutputFactory xmlOutFactory = XMLOutputFactory.newInstance();
-        w = xmlOutFactory.createXMLStreamWriter(System.out, "utf-8");
+         this(System.out);
     }
 
     XmlHandStatisticStreamSaver(OutputStream os) throws XMLStreamException {
@@ -104,7 +104,7 @@ public class XmlHandStatisticStreamSaver implements HandStatisticSaver {
                   w.writeEndElement();
                   
                    w.writeStartElement(CHANCE);
-                  w.writeCharacters(String.format("%7.4f", ((float) times) * 100 / gamesPlayed));
+                  w.writeCharacters(String.format("%7.7f", ((float) times) * 100 / gamesPlayed));
                   w.writeEndElement();
                    
                      w.writeStartElement(ESTIMATION);
