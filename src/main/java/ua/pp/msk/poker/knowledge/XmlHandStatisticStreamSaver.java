@@ -109,7 +109,7 @@ public class XmlHandStatisticStreamSaver implements HandStatisticSaver {
                    
                      w.writeStartElement(ESTIMATION);
                        int loseTimes = (loses.get(gs).get(h) == null) ? 0 : loses.get(gs).get(h);
-                  w.writeCharacters(String.format("%7.4f", (loseTimes > 0) ? ((float) times) * 100 / loseTimes : 100f));
+                  w.writeCharacters(String.format("%7.4f", (loseTimes > 0) ? ((float) times) * 100 / (times + loseTimes) : 100f));
                   w.writeEndElement();
                   
                      w.writeStartElement(WINTIMES);
